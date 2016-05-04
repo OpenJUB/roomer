@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Roomer</title>
+    <div>
+    {% if user.is_authenticated %}
+        Logged in as {{ user.get_full_name }} <a href="{%  url 'django.contrib.auth.views.logout' %}">Log out</a>
+    {% else %}
+        <a href="{%  url 'django.contrib.auth.views.login' %}">Log in</a>
+    {%  endif %}
+    </div>
+</head>
+<body>
+{%  block content %}
+    <p>Just an empty page.</p>
+    <h3><a href="{%  url 'collegechooser.views.overview' %}">College allocation</a></h3>
+{%  endblock %}
+</body>
+</html>

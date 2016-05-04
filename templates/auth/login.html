@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block page_title %}Login{% endblock %}
+
+{% block content %}
+
+{% if form.errors %}
+<div class="alert alert-danger" role="alert">
+  <strong>Invalid login.</strong> Your username and password didn't match. Please try again.
+</div>
+{% endif %}
+
+{% if next %}
+    {% if user.is_authenticated %}
+      <div class="alert alert-warning" role="alert">
+        <strong>No rights.</strong> Your account doesn't have access to this page. To proceed,
+        please login with an account that has access.
+      </div>
+    {% else %}
+      <div class="alert alert-info" role="alert">
+        <strong>Login required.</strong> Please login to view this page.
+      </div>
+    {% endif %}
+{% endif %}
+
+<div class="row">
+
+  <div class="col-sm-4">
+    <form class="form-signin" method="post" action="{% url 'django.contrib.auth.views.login' %}">
+      <h2 class="form-signin-heading">Please sign in</h2>
+      {% csrf_token %}
+      <label for="inputEmail" class="sr-only">CampusNet Username</label>
+      <input placeholder="Username" class="form-control" id="id_username" maxlength="254" name="username" type="text">
+
+      <label for="inputPassword" class="sr-only">Password</label>
+      <input placeholder="Password" class="form-control" id="id_password" name="password" type="password">
+
+      <button type="submit" class="btn-block btn-lg btn btn-primary" value="login">Login</button>
+
+      <input type="hidden" name="next" value="{{ next }}" />
+    </form>
+  </div>
+</div> <!-- row -->
+
+<p class="text-muted">If you lost your password, reset it in <a class="text-muted" href="https://campusnet.jacobs-university.de">CampusNet</a>.</p>
+
+{% endblock %}
