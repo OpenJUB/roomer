@@ -1,5 +1,4 @@
-from django.conf import settings
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 
 from roomer.models import UserProfile
 from roomer.models import get_college_code
@@ -37,47 +36,40 @@ class OjubBackend(object):
         if details.status_code != requests.codes.ok:
             return None
 
-        try:
-            user = User.objects.get(username=uname)
-        except User.DoesNotExist:
-            user = User(username=uname)
+        data = details.json()
 
+        user_model = get_user_model()
+        now = datetime.datetime.now()
+
+        # Update or create the user profile
+        user, created = user_model.objects.update_or_create(
+            username=uname,
+            defaults={
+                'username': uname,
+                'first_name': data['firstName'],
+                'last_name': data['lastName'],
+                'email': data['email'],
+                'seniority': now.year - 2000 - int(data['year']) + 3,
+                'year': int(data['year']),
+                'major': data['major'],
+                'country': data['country'],
+                'old_college': get_college_code(data['college']),
+            }
+        )
+
+        if created:
             user.set_unusable_password()
-
-            # TODO Don't hardcode this
             if user.username in ["lkuboschek", "sshukla"]:
                 user.is_staff = True
                 user.is_superuser = True
 
-            data = details.json()
-
-            user.first_name = data['firstName']
-            user.last_name = data['lastName']
-            user.email = data['email']
-
-            user.save()
-
-        now = datetime.datetime.now()
-        details_obj = details.json()
-
-        # Update the user profile
-        profile, _ = UserProfile.objects.update_or_create(
-            user=user,
-            defaults={
-                'seniority': now.year - 2000 - int(details_obj['year']) + 3,
-                'year': int(details_obj['year']),
-                'major': details_obj['major'],
-                'country': details_obj['country'],
-                'old_college': get_college_code(details_obj['college']),
-            }
-        )
-
-        profile.save()
+        user.save()
 
         return user
 
     def get_user(self, user_id):
+        user_model = get_user_model()
         try:
-            return User.objects.get(pk=user_id)
-        except User.DoesNotExist:
+            return user_model.objects.get(pk=user_id)
+        except user_model.DoesNotExist:
             return None

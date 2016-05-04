@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 
 from .regions import regions
 
@@ -21,11 +21,19 @@ def get_college_code(college_str):
 
 class CollegeField(models.CharField):
     def __init__(self, *args, **kwargs):
+
+        # Remove args that we set ourselves
+        if 'max_length' in kwargs:
+            del kwargs['max_length']
+
+        if 'choices' in kwargs:
+            del kwargs['choices']
+
         super(CollegeField, self).__init__(*args, max_length=2, choices=COLLEGE_CHOICES, **kwargs)
 
 
-class UserProfile(models.Model):
-    REQUEST_DIFFERENT_COLLEGES = 0
+class UserProfile(AbstractUser):
+    REQUEST_INVALID = 0
     REQUEST_SENT = 1
     REQUEST_MUTUAL = 2
 
@@ -33,8 +41,6 @@ class UserProfile(models.Model):
     COUNTRY_POINTS = 1
     REGION_POINTS = 0.5
     MAJOR_POINTS = 0.5
-
-    user = models.OneToOneField(User, on_delete=models.CASCADE, editable=False)
 
     year = models.IntegerField(editable=False)
     major = models.CharField(max_length=128, editable=False)
@@ -52,7 +58,7 @@ class UserProfile(models.Model):
     old_college = CollegeField(editable=False)
     college = CollegeField(blank=True)
 
-    points = models.DecimalField(decimal_places=3, max_digits=6, blank=True, editable=False)
+    points = models.DecimalField(default=0, decimal_places=3, max_digits=6, blank=True, editable=False)
     roommates = models.ManyToManyField("self", blank=True)
 
     def send_roommate_request(self, other):
@@ -62,8 +68,13 @@ class UserProfile(models.Model):
             :arg other Another UserProfile instance
             :returns Truthy if request sent, Falsy if request not valid. Return codes declared in this class
         """
+
+        # You can't room with yourself
+        if self == other:
+            return self.REQUEST_INVALID
+
         if self.college != other.college:
-            return self.REQUEST_DIFFERENT_COLLEGES
+            return self.REQUEST_INVALID
 
         req, _ = RoommateRequest.objects.get_or_create(sender=self, receiver=other)
 
@@ -92,6 +103,9 @@ class UserProfile(models.Model):
         return "other"
 
     def update_points(self):
+        if not self.points:
+            return
+
         # Start with seniority
         self.points = self.seniority
         self.points += self.extra_points
@@ -120,10 +134,10 @@ class UserProfile(models.Model):
         super(UserProfile, self).save(*args, **kwargs) # Call the "real" save() method.
 
     def __str__(self):
-        if self.user.get_full_name():
-            return self.user.get_full_name()
+        if self.get_full_name():
+            return self.get_full_name()
         else:
-            return self.user.get_username()
+            return self.get_username()
 
 
 class Room(models.Model):

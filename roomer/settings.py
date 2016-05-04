@@ -53,6 +53,7 @@ MIDDLEWARE_CLASSES = [
 ]
 
 ROOT_URLCONF = 'roomer.urls'
+LOGIN_REDIRECT_URL = "home"
 
 TEMPLATES = [
     {
@@ -104,8 +105,8 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Custom UserProfile
-AUTH_PROFILE_MODULE = "roomer.UserProfile"
+# Custom User model
+AUTH_USER_MODEL = "roomer.UserProfile"
 
 # OpenJUB auth
 AUTHENTICATION_BACKENDS = ( 'django.contrib.auth.backends.ModelBackend',
