@@ -107,6 +107,10 @@ AUTH_PASSWORD_VALIDATORS = [
 # Custom UserProfile
 AUTH_PROFILE_MODULE = "roomer.UserProfile"
 
+# OpenJUB auth
+AUTHENTICATION_BACKENDS = ( 'django.contrib.auth.backends.ModelBackend',
+                            'roomer.ojub_auth.OjubBackend')
+
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
 
