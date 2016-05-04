@@ -22,6 +22,11 @@ class UserProfile(models.Model):
     REQUEST_SENT = 1
     REQUEST_MUTUAL = 2
 
+    COLLEGE_SPIRIT_POINTS = 0.5
+    COUNTRY_POINTS = 1
+    REGION_POINTS = 0.5
+    MAJOR_POINTS = 0.5
+
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     year = models.IntegerField()
@@ -38,7 +43,7 @@ class UserProfile(models.Model):
     old_college = CollegeField()
     college = CollegeField()
 
-    points = models.DecimalField(decimal_places=3, max_digits=6)
+    points = models.DecimalField(decimal_places=3, max_digits=6, blank=True)
     roommates = models.ManyToManyField("self", blank=True)
 
     def send_roommate_request(self, other):
@@ -58,7 +63,30 @@ class UserProfile(models.Model):
         return "other"
 
     def update_points(self):
-        self.points = 42
+        # Start with seniority
+        self.points = self.seniority
+
+        # Add college spirit
+        if self.college == self.old_college:
+            self.points += self.COLLEGE_SPIRIT_POINTS
+
+        for mate in self.roommates.all():
+            # Nationality points
+            if self.country != mate.country:
+                self.points += self.COUNTRY_POINTS
+
+            # Region points
+            if self.get_region() != mate.get_region():
+                self.points += self.REGION_POINTS
+
+            # Major points
+            if self.major != mate.major:
+                self.points += self.MAJOR_POINTS
+
+    def save(self, *args, **kwargs):
+        self.update_points()
+        super(UserProfile, self).save(*args, **kwargs) # Call the "real" save() method.
+
 
     def __str__(self):
         if self.user.get_full_name():
