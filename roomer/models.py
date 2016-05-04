@@ -84,6 +84,7 @@ class College(models.Model):
     rooms = models.ManyToManyField(Room)
 
 
+# TODO Check if people are already roommates when creating request
 class RoommateRequest(models.Model):
     sender = models.ForeignKey(UserProfile, related_name='outbox')
     receiver = models.ForeignKey(UserProfile, related_name='inbox')
