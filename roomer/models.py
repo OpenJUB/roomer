@@ -70,18 +70,20 @@ class UserProfile(models.Model):
         if self.college == self.old_college:
             self.points += self.COLLEGE_SPIRIT_POINTS
 
-        for mate in self.roommates.all():
-            # Nationality points
-            if self.country != mate.country:
-                self.points += self.COUNTRY_POINTS
+        # Only check the m2m manager if we're saved already
+        if self.pk:
+            for mate in self.roommates.all():
+                # Nationality points
+                if self.country != mate.country:
+                    self.points += self.COUNTRY_POINTS
 
-            # Region points
-            if self.get_region() != mate.get_region():
-                self.points += self.REGION_POINTS
+                # Region points
+                if self.get_region() != mate.get_region():
+                    self.points += self.REGION_POINTS
 
-            # Major points
-            if self.major != mate.major:
-                self.points += self.MAJOR_POINTS
+                # Major points
+                if self.major != mate.major:
+                    self.points += self.MAJOR_POINTS
 
     def save(self, *args, **kwargs):
         self.update_points()
