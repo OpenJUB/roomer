@@ -94,6 +94,7 @@ class UserProfile(models.Model):
     def update_points(self):
         # Start with seniority
         self.points = self.seniority
+        self.points += self.extra_points
 
         # Add college spirit
         if self.college == self.old_college:
