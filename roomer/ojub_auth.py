@@ -2,6 +2,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 
 from roomer.models import UserProfile
+from roomer.models import get_college_code
 
 import requests
 import datetime
@@ -20,7 +21,7 @@ class OjubBackend(object):
     """
     def authenticate(self, username=None, password=None):
         r = requests.post(OPENJUB_BASE + "auth/signin",
-                          data = {'username':username, 'password': password})
+                          data={'username': username, 'password': password})
 
         if r.status_code != requests.codes.ok:
             return None
@@ -31,7 +32,7 @@ class OjubBackend(object):
         token = resp['token']
 
         details = requests.get(OPENJUB_BASE + "user/me",
-                       params = {'token':token})
+                               params={'token': token})
 
         if details.status_code != requests.codes.ok:
             return None
@@ -57,18 +58,17 @@ class OjubBackend(object):
             user.save()
 
         now = datetime.datetime.now()
-
         details_obj = details.json()
 
-        # Update part of the user profile
-        profile, created = UserProfile.objects.update_or_create(
+        # Update the user profile
+        profile, _ = UserProfile.objects.update_or_create(
             user=user,
-            year=int(details_obj['year']),
-            major=details_obj['majorShort'],
-            country=details_obj['country'],
-            old_college=details_obj['college'],
             defaults={
                 'seniority': now.year - 2000 - int(details_obj['year']) + 3,
+                'year': int(details_obj['year']),
+                'major': details_obj['major'],
+                'country': details_obj['country'],
+                'old_college': get_college_code(details_obj['college']),
             }
         )
 

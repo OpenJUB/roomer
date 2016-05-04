@@ -7,14 +7,19 @@ admin.site.unregister(User)
 
 
 class UserProfileInline(admin.StackedInline):
+    readonly_fields = ('points', 'year', 'major', 'country', 'old_college', 'seniority')
     model = UserProfile
 
 
 class UserProfileAdmin(UserAdmin):
     inlines = [UserProfileInline, ]
 
-admin.site.register(User, UserAdmin)
+admin.site.register(User, UserProfileAdmin)
 
 
-admin.site.register(UserProfile)
+class UserProfileAdmin(admin.ModelAdmin):
+    readonly_fields = ('points', 'year', 'major', 'country', 'old_college', 'seniority')
+    model = UserProfile
+
+admin.site.register(UserProfile, UserProfileAdmin)
 admin.site.register(RoommateRequest)

@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.db.models.fields import CharField
 
 from .regions import regions
 
@@ -13,12 +12,20 @@ COLLEGE_CHOICES = [
 ]
 
 
+def get_college_code(college_str):
+    for college in COLLEGE_CHOICES:
+        if college[1] == college_str:
+            return college[0]
+    return ''
+
+
 class CollegeField(models.CharField):
     def __init__(self, *args, **kwargs):
-        super(CollegeField, self).__init__(*args, max_length=2, choices=COLLEGE_CHOICES)
+        super(CollegeField, self).__init__(*args, max_length=2, choices=COLLEGE_CHOICES, **kwargs)
 
 
 class UserProfile(models.Model):
+    REQUEST_DIFFERENT_COLLEGES = 0
     REQUEST_SENT = 1
     REQUEST_MUTUAL = 2
 
@@ -27,26 +34,37 @@ class UserProfile(models.Model):
     REGION_POINTS = 0.5
     MAJOR_POINTS = 0.5
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, editable=False)
 
-    year = models.IntegerField()
-    major = models.CharField(max_length=128)
-    country = models.CharField(max_length=64)
+    year = models.IntegerField(editable=False)
+    major = models.CharField(max_length=128, editable=False)
+    country = models.CharField(max_length=64, editable=False)
 
     # TODO Write a custom validator. format like: "C3:NM:KR:ME"
     college_pref = models.CharField(max_length=11, blank=True)
 
-    # TODO Initialize this field properly
     # How many years this person has been at university
-    seniority = models.IntegerField()
+    seniority = models.IntegerField(editable=False)
 
-    old_college = CollegeField()
-    college = CollegeField()
+    # Extra points, added manually by the admin
+    extra_points = models.IntegerField(default=0)
 
-    points = models.DecimalField(decimal_places=3, max_digits=6, blank=True)
+    old_college = CollegeField(editable=False)
+    college = CollegeField(blank=True)
+
+    points = models.DecimalField(decimal_places=3, max_digits=6, blank=True, editable=False)
     roommates = models.ManyToManyField("self", blank=True)
 
     def send_roommate_request(self, other):
+        """ Creates a request, also checking if another request in the opposite direction
+            already exists.
+
+            :arg other Another UserProfile instance
+            :returns Truthy if request sent, Falsy if request not valid. Return codes declared in this class
+        """
+        if self.college != other.college:
+            return self.REQUEST_DIFFERENT_COLLEGES
+
         req, _ = RoommateRequest.objects.get_or_create(sender=self, receiver=other)
 
         if not req.check_mutual():
@@ -54,6 +72,17 @@ class UserProfile(models.Model):
             return self.REQUEST_SENT
         else:
             return self.REQUEST_MUTUAL
+
+    def remove_roommate(self, other):
+        if other not in self.roommates.all():
+            return False
+        else:
+            self.roommates.remove(other)
+
+            # Also remove it from our roommates' lists
+            for mate in self.roommates.all():
+                mate.roommates.remove(other)
+                mate.save()
 
     def get_region(self):
         for key, value in regions.items():
@@ -89,7 +118,6 @@ class UserProfile(models.Model):
         self.update_points()
         super(UserProfile, self).save(*args, **kwargs) # Call the "real" save() method.
 
-
     def __str__(self):
         if self.user.get_full_name():
             return self.user.get_full_name()
@@ -123,8 +151,15 @@ class RoommateRequest(models.Model):
         unique_together = ('sender', 'receiver')
 
     def accept(self):
-        self.sender.roommates.add(self.receiver)
+        self.receiver.roommates.add(self.sender)
         self.sender.save()
+
+        # Also add the new roommate to our other roommates
+        for mate in self.receiver.roommates.all():
+            if mate != self.sender:
+                mate.roommates.add(self.sender)
+                mate.save()
+
         self.delete()
 
     def check_mutual(self):
@@ -135,11 +170,9 @@ class RoommateRequest(models.Model):
             # and delete these requests
 
             # Only this is required, since the relation is symmetrical
-            self.sender.roommates.add(self.receiver)
-            self.sender.save()
+            self.accept()
 
             reverse.delete()
-            self.delete()
 
             return True
         except RoommateRequest.DoesNotExist:
