@@ -1,0 +1,24 @@
+{%  extends "base.html" %}
+{% block content %}
+    <h1>College allocation</h1>
+    {% if profile.college %}
+        <h2>Results</h2>
+        {% if profile.old_college == profile.college %}
+            <p>You're staying in {{ profile.get_college_display }}.</p>
+        {% else %}
+            <p>Looks like you're moving to {{ profile.get_college_display }}.</p>
+        {% endif %}
+    {% elif window %}
+        Check again at {{ window.end }} for your college allocation.
+    {% else %}
+        No college allocation is currently being done.
+    {% endif %}
+
+    {% if can_change_college %}
+        <h2>Update your preferences</h2>
+        <!-- TODO Show college chooser form -->
+        <h3><a href="#">Stay in your current college</a></h3>
+        <p>----- or -----</p>
+        <h3>TODO Show a college ranker here</h3>
+    {% endif %}
+{%  endblock %}
