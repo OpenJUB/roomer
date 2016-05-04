@@ -19,6 +19,9 @@ class CollegeField(models.CharField):
 
 
 class UserProfile(models.Model):
+    REQUEST_SENT = 1
+    REQUEST_MUTUAL = 2
+
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     year = models.IntegerField()
@@ -37,6 +40,15 @@ class UserProfile(models.Model):
 
     points = models.DecimalField(decimal_places=3, max_digits=6)
     roommates = models.ManyToManyField("self", blank=True)
+
+    def send_roommate_request(self, other):
+        req, _ = RoommateRequest.objects.get_or_create(sender=self, receiver=other)
+
+        if not req.check_mutual():
+            req.save()
+            return self.REQUEST_SENT
+        else:
+            return self.REQUEST_MUTUAL
 
     def get_region(self):
         for key, value in regions.items():
@@ -76,6 +88,9 @@ class RoommateRequest(models.Model):
     sender = models.ForeignKey(UserProfile, related_name='outbox')
     receiver = models.ForeignKey(UserProfile, related_name='inbox')
 
+    class Meta:
+        unique_together = ('sender', 'receiver')
+
     def accept(self):
         self.sender.roommates.add(self.receiver)
         self.sender.save()
@@ -98,3 +113,6 @@ class RoommateRequest(models.Model):
             return True
         except RoommateRequest.DoesNotExist:
             return False
+
+    def __str__(self):
+        return str(self.sender) + " to " + str(self.receiver)
