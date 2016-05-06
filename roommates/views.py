@@ -26,6 +26,7 @@ def deny(request, request_id):
 
     return redirect('roommate-overview')
 
+
 @require_GET
 @login_required
 def accept(request, request_id):
@@ -33,6 +34,7 @@ def accept(request, request_id):
     req.accept()
 
     return redirect('roommate-overview')
+
 
 @require_POST
 @login_required
@@ -52,6 +54,7 @@ def invite(request):
             return overview(request)
 
     return overview(request, form=form)
+
 
 @require_GET
 @login_required
