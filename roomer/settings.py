@@ -112,6 +112,8 @@ AUTH_USER_MODEL = "roomer.UserProfile"
 AUTHENTICATION_BACKENDS = ( 'django.contrib.auth.backends.ModelBackend',
                             'roomer.ojub_auth.OjubBackend')
 
+LOGIN_URL = "login"
+
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
 
@@ -130,3 +132,18 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# College choices /short_name, long_name, capacity)
+COLLEGE_CHOICES = [
+    ('NM', 'Nordmetall'),
+    ('C3', 'C3'),
+    ('KR', 'Krupp'),
+    ('ME', 'Mercator')
+]
+
+COLLEGE_CAPACITIES = [
+    ('NM', 123),
+    ('C3', 222),
+    ('KR', 164),
+    ('ME', 164)
+]

@@ -1,4 +1,6 @@
 
+from django.conf import settings
+
 from django.db import models
 from django.utils import timezone
 
@@ -9,28 +11,25 @@ class UpdateWindow(models.Model):
     start = models.DateTimeField()
     end = models.DateTimeField()
 
-    # Allocate first come first serve strategy
+    # Allocate first come first serve strategy, but only for unallocated students
     live_allocation = models.BooleanField(default=False)
 
-    # Only allow unallocated students to change records
-    only_unallocated = models.BooleanField(default=False)
-
     def is_open(self):
-        now = timezone.now()
+        now = timezone.localtime(timezone.now())
         return self.start <= now < self.end
 
     def can_update_colleges(self, profile):
-        if not self.is_open():
-            return False
+        if self.is_open():
+            if self.live_allocation:
+                return profile.college == ''
+            return True
         else:
-            if self.only_unallocated and profile.college:
-                return False
-            else:
-                return True
+            return False
 
     def close(self):
         # TODO Actually allocate people based on preferences
-        pass
+        if self.live_allocation:
+            return
 
     def __str__(self):
         if self.is_open():

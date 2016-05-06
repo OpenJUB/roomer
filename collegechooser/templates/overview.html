@@ -17,8 +17,18 @@
     {% if can_change_college %}
         <h2>Update your preferences</h2>
         <!-- TODO Show college chooser form -->
-        <h3><a href="#">Stay in your current college</a></h3>
+        <h3>Stay in your current college</h3>
+        <form action="{% url 'college-overview' %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="stay" value="true" />
+            <input type="submit" value="Stay" />
+        </form>
         <p>----- or -----</p>
         <h3>TODO Show a college ranker here</h3>
+        <form action="{% url 'college-overview' %}" method="post">
+            {% csrf_token %}
+            {{ pref_form }}
+            <input type="submit" value="Save" />
+        </form>
     {% endif %}
 {%  endblock %}

@@ -1,19 +1,12 @@
+from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 from .regions import regions
 
-# Create your models here.
-COLLEGE_CHOICES = [
-    ('NM', 'Nordmetall'),
-    ('C3', 'C3'),
-    ('KR', 'Krupp'),
-    ('ME', 'Mercator')
-]
-
 
 def get_college_code(college_str):
-    for college in COLLEGE_CHOICES:
+    for college in settings.COLLEGE_CHOICES:
         if college[1] == college_str:
             return college[0]
     return ''
@@ -29,7 +22,7 @@ class CollegeField(models.CharField):
         if 'choices' in kwargs:
             del kwargs['choices']
 
-        super(CollegeField, self).__init__(*args, max_length=2, choices=COLLEGE_CHOICES, **kwargs)
+        super(CollegeField, self).__init__(*args, max_length=2, choices=settings.COLLEGE_CHOICES, **kwargs)
 
 
 class UserProfile(AbstractUser):
