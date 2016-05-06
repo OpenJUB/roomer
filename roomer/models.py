@@ -95,7 +95,11 @@ class UserProfile(AbstractUser):
 
         return "other"
 
-    def update_points(self):
+    def update_points(self, ignore_roommates=False):
+        """
+            Updates the points for this user, and all of his roommates
+            :arg ignore_roommates Don't update this users' roommates. Defaults to False
+        """
         if not self.points:
             return
 
@@ -110,6 +114,10 @@ class UserProfile(AbstractUser):
         # Only check the m2m manager if we're saved already
         if self.pk:
             for mate in self.roommates.all():
+                # Update the roommates' points as well
+                if not ignore_roommates:
+                    mate.update_points()
+
                 # Nationality points
                 if self.country != mate.country:
                     self.points += self.COUNTRY_POINTS
@@ -171,6 +179,11 @@ class RoommateRequest(models.Model):
         self.delete()
 
     def check_mutual(self):
+
+        # If the recipient is already a roommate of the sender, delete the request
+        if self.receiver in self.sender.roommates.all():
+            self.delete()
+
         try:
             reverse = RoommateRequest.objects.get(sender=self.receiver, receiver=self.sender)
 
