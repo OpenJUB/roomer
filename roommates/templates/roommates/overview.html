@@ -6,7 +6,7 @@
         <ul>
         {% for roommate in profile.roommates.all %}
             <li>
-                {{ roommate }}
+                {{ roommate.get_full_name }}
                 <a href="{% url 'roommate-remove' roommate.pk %}">Remove</a>
             </li>
         {% endfor %}
@@ -36,7 +36,7 @@
         <ul>
         {% for request in profile.inbox.all %}
             <li>
-                {{ request.sender }}
+                {{ request.sender.get_full_name }}
                 <a href="{% url 'request-accept' request.pk %}">Accept</a>
                 <a href="{% url 'request-deny' request.pk %}">Deny</a>
             </li>
@@ -49,7 +49,7 @@
         <h1>Pending requests</h1>
         <ul>
         {% for request in profile.outbox.all %}
-            <li>{{ request.receiver }}</li>
+            <li>{{ request.receiver.get_full_name }}</li>
         {% endfor %}
         </ul>
     {% endif %}
