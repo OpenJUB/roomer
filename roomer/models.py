@@ -131,7 +131,7 @@ class UserProfile(AbstractUser):
                     self.points += self.MAJOR_POINTS
 
     def save(self, *args, **kwargs):
-        self.update_points()
+        self.update_points(kwargs.get('ignore_roommates', False))
         super(UserProfile, self).save(*args, **kwargs) # Call the "real" save() method.
 
     def __str__(self):
@@ -168,13 +168,13 @@ class RoommateRequest(models.Model):
 
     def accept(self):
         self.receiver.roommates.add(self.sender)
-        self.sender.save()
+        self.sender.save(ignore_roommates=True)
 
         # Also add the new roommate to our other roommates
         for mate in self.receiver.roommates.all():
             if mate != self.sender:
                 mate.roommates.add(self.sender)
-                mate.save()
+                mate.save(ignore_roommates=True)
 
         self.delete()
 
