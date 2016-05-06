@@ -16,7 +16,6 @@ class CollegePrefForm(forms.Form):
     pref3 = CollegeField(label="Preference 3")
     pref4 = CollegeField(label="Preference 4")
 
-    # TODO Write custom validation in clean method
     def clean(self):
         cleaned_data = super(CollegePrefForm, self).clean()
 
