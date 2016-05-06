@@ -26,6 +26,9 @@ urlpatterns = [
     # College allocation
     url(r'^colleges/', include('collegechooser.urls')),
 
+    # Roommate system
+    url(r'^roommates/', include('roommates.urls')),
+
     # Authentication
     url(r'^login/', auth_views.login, {'template_name': 'auth/login.html'}, name="login"),
     url(r'^logout/', auth_views.logout, {'template_name': 'auth/logout.html', 'next_page': 'home'}, name="logout"),

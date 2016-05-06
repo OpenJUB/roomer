@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Your roommates</h1>
+    {% if profile.roommates.all %}
+        <ul>
+        {% for roommate in profile.roommates.all %}
+            <li>{{ roommate.get_full_name }}</li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>You have no friends</p>
+    {% endif %}
+
+
+<h1>Received requests</h1>
+    {% if profile.roommates.all %}
+        <ul>
+        {% for roommate in profile.inbox.all %}
+            <li>{{ roommate.get_full_name }}</li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>You have not received any requests</p>
+    {% endif %}
+
+
+<h1>Pending requests</h1>
+    {% if profile.outbox.all %}
+        <ul>
+        {% for roommate in profile.outbox.all %}
+            <li>{{ roommate.get_full_name }}</li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>You have not sent any requests</p>
+    {% endif %}
+
+{% endblock %}
