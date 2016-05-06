@@ -191,9 +191,8 @@ class RoommateRequest(models.Model):
             # and delete these requests
 
             # Only this is required, since the relation is symmetrical
-            self.accept()
-
-            reverse.delete()
+            reverse.accept()
+            self.delete()
 
             return True
         except RoommateRequest.DoesNotExist:
