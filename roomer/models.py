@@ -167,8 +167,16 @@ class RoommateRequest(models.Model):
         unique_together = ('sender', 'receiver')
 
     def accept(self):
+        # Add ourselves to their roommates
         self.receiver.roommates.add(self.sender)
+
+        # Add our roommates to their roommates
+        for mate in self.sender.roommates.all():
+            if mate != self.receiver:
+                self.receiver.roommates.add(mate)
+
         self.receiver.save()
+
 
         # Also add the new roommate to our other roommates
         for mate in self.receiver.roommates.all():
