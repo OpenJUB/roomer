@@ -15,7 +15,7 @@ class UpdateWindow(models.Model):
     live_allocation = models.BooleanField(default=False)
 
     def is_open(self):
-        now = timezone.localtime(timezone.now())
+        now = timezone.make_aware(timezone.now(), timezone.get_current_timezone())
         return self.start <= now < self.end
 
     def can_update_colleges(self, profile):
