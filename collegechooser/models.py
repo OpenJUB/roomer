@@ -3,6 +3,7 @@ from django.conf import settings
 
 from django.db import models
 from django.utils import timezone
+from datetime import datetime
 
 # Create your models here.
 
@@ -15,14 +16,14 @@ class UpdateWindow(models.Model):
     live_allocation = models.BooleanField(default=False)
 
     def is_open(self):
-        now = timezone.make_aware(timezone.now(), timezone.get_current_timezone())
+        now = timezone.make_aware(datetime.now(), timezone.get_current_timezone())
         return self.start <= now < self.end
 
     def can_update_colleges(self, profile):
         if self.is_open():
             if self.live_allocation:
-                return profile.college == ''
-            return True
+                return True
+            return profile.college == ''
         else:
             return False
 

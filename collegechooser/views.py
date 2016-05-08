@@ -3,10 +3,11 @@ import datetime
 from django.views.decorators.http import require_http_methods
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.conf import settings
 
 from .models import UpdateWindow
 from .forms import CollegePrefForm
-
+from .utils import *
 
 @require_http_methods(['POST', 'GET'])
 @login_required
@@ -20,7 +21,7 @@ def overview(request):
 
     context = {
         'window': current_window,
-        'profile': profile
+        'profile': profile,
     }
 
     if current_window:
@@ -34,6 +35,17 @@ def overview(request):
                 profile.college = profile.old_college
                 profile.save()
                 return redirect(overview)
+        elif current_window.live_allocation:
+            new_college = request.POST.get('college', default='')
+
+            if new_college in settings.COLLEGE_CODES:
+                if not is_full(new_college):
+                    profile.college = new_college
+                    profile.save()
+                else:
+                    context['error'] = 'The selected college is full.'
+            else:
+                context['error'] = 'You filthy hacker.'
         else:
             form = CollegePrefForm(request.POST)
 
@@ -46,5 +58,10 @@ def overview(request):
         if context['can_change_college']:
             form = CollegePrefForm.from_pref_string(profile.college_pref)
             context['pref_form'] = form
+
+    fills = get_fill_percentages()
+    college_choices = [(code, display, fills.get(code, 0)) for code, display in settings.COLLEGE_CHOICES]
+
+    context['college_choices'] = college_choices
 
     return render(request, 'overview.html', context)
