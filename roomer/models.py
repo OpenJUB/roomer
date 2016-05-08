@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import RegexValidator
+from django.core.validators import RegexValidator, ValidationError
 
 
 from .regions import regions
@@ -170,6 +170,13 @@ class Room(models.Model):
 
     # Associated rooms belong together, think apartments
     associated = models.ManyToManyField("self", blank=True)
+
+    def add_tag(self, tag, generated=False, raise_exception=False):
+        try:
+            self.tags.create(room=self, generated=generated, tag=tag)
+        except ValidationError as e:
+            if raise_exception:
+                raise e
 
     def update_generated_tags(self):
         self.tags.filter(generated=True).delete()
