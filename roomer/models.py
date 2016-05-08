@@ -1,6 +1,8 @@
 from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.core.validators import RegexValidator
+
 
 from .regions import regions
 
@@ -142,20 +144,94 @@ class UserProfile(AbstractUser):
 
 
 class Room(models.Model):
+    ROOM_CODE_REGEX = r'[A-Z]{2}-\d{3}'
+
+    SINGLE_ROOM_TAG = 'single'
+    DOUBLE_ROOM_TAG = 'double'
+    TRIPLE_ROOM_TAG = 'triple'
+    TALL_ROOM_TAG = 'tall'
+    QUIET_ROOM_TAG = 'quiet'
+    DISABLED_ROOM_TAG = 'disabled'
+
     # TODO Write format validator
-    code = models.CharField(max_length=8)
+    code = models.CharField(
+        max_length=6,
+        validators=[
+            RegexValidator(
+                regex=ROOM_CODE_REGEX,
+                message='Enter a valid room code.'
+            )]
+    )
+
+    college = models.ForeignKey('College')
+
     floor = models.IntegerField()
     block = models.CharField(max_length=1)
 
-    # TODO Implement room flags (tall, quiet, etc.)
-
     # Associated rooms belong together, think apartments
-    associated = models.ManyToManyField("self")
+    associated = models.ManyToManyField("self", blank=True)
+
+    def update_generated_tags(self):
+        self.tags.filter(generated=True).delete()
+
+        new_tags = []
+
+        no_associated = self.associated.count()
+
+        if no_associated == 1:
+            new_tags.append(RoomTag(room=self, generated=True, tag=self.DOUBLE_ROOM_TAG))
+        elif no_associated == 2:
+            new_tags.append(RoomTag(room=self, generated=True, tag=self.TRIPLE_ROOM_TAG))
+        elif no_associated == 0:
+            new_tags.append(RoomTag(room=self, generated=True, tag=self.SINGLE_ROOM_TAG))
+
+        self.tags.bulk_create(new_tags)
+
+    def save(self, **kwargs):
+        # Save ourselves if we're not in the DB, so we can use m2m field
+        if not self.pk:
+            super(Room, self).save(kwargs)
+
+        # Update boolean fields
+        for room in self.associated.all():
+            room.update_generated_tags()
+            room.save()
+
+        self.update_generated_tags()
+
+        super(Room, self).save(kwargs)
+
+    def __str__(self):
+        return self.code
+
+
+class RoomTag(models.Model):
+    VALID_TAG_LIST = [
+        ('quiet', 'quiet'),
+        ('tall', 'tall'),
+        ('disabled', 'disabled'),
+        ('single', 'single'),
+        ('double', 'double'),
+        ('triple', 'triple'),
+    ]
+
+    room = models.ForeignKey(Room, related_name='tags')
+    tag = models.CharField(max_length=30, choices=VALID_TAG_LIST)
+
+    generated = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ('room', 'tag')
+
+    def __str__(self):
+        return self.room.code + " [" + self.tag + "]"
 
 
 class College(models.Model):
     name = CollegeField()
-    rooms = models.ManyToManyField(Room)
+
+    def __str__(self):
+        return self.get_name_display()
 
 
 # TODO Check if people are already roommates when creating request
