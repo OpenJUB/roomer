@@ -22,6 +22,7 @@ def overview(request):
     context = {
         'window': current_window,
         'profile': profile,
+        'max_percentage': settings.MAX_COLLEGE_FILL
     }
 
     if current_window:

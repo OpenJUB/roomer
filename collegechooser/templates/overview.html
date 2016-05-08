@@ -21,7 +21,7 @@
                 <form action="{% url 'college-overview' %}" method="post">
                     {% csrf_token %}
                     <input type="hidden" name="college" value="{{ code }}" />
-                    <input type="submit" value="{{ display }}" />
+                    <input {% if percentage > max_percentage %}disabled{% endif %} type="submit" value="{{ display }}" />
                     <p>Currently <i>{{ percentage }}%</i> full.</p>
                 </form>
             {% endfor %}
