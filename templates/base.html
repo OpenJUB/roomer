@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Roomer</title>
+</head>
+<body>
+    <div>
+    {% if user.is_authenticated %}
+        Logged in as {{ user.get_full_name }} <a href="{%  url 'logout' %}">Log out</a>
+    {% else %}
+        <a href="{%  url 'login' %}">Log in</a>
+    {%  endif %}
+    </div>
+    {%  block content %}
+        <h1>Roomer</h1>
+        <h3><a href="{%  url 'college-overview' %}">College allocation</a></h3>
+        <h3><a href="{% url 'roommate-overview' %}">Roommate management</a></h3>
+    {%  endblock %}
+</body>
+</html>

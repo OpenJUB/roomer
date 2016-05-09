@@ -13,9 +13,23 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url
+from django.conf.urls import include, url
 from django.contrib import admin
+from django.contrib.auth import views as auth_views
+
+from django.views.generic import TemplateView
 
 urlpatterns = [
+    url(r'^$', TemplateView.as_view(template_name="base.html"), name="home"),
     url(r'^admin/', admin.site.urls),
+
+    # College allocation
+    url(r'^colleges/', include('collegechooser.urls')),
+
+    # Roommate system
+    url(r'^roommates/', include('roommates.urls')),
+
+    # Authentication
+    url(r'^login/', auth_views.login, {'template_name': 'auth/login.html'}, name="login"),
+    url(r'^logout/', auth_views.logout, {'template_name': 'auth/logout.html', 'next_page': 'home'}, name="logout"),
 ]
