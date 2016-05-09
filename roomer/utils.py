@@ -1,5 +1,5 @@
 import functools
-
+from django.conf import settings
 
 def get_college_code(college_str):
     for college in settings.COLLEGE_CHOICES:

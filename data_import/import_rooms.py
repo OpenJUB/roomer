@@ -1,9 +1,19 @@
 import json
+import os
 
-from django.conf import settings
-settings.configure()
+COLLEGE_CHOICES = [
+    ('NM', 'Nordmetall'),
+    ('C3', 'C3'),
+    ('KR', 'Krupp'),
+    ('ME', 'Mercator')
+]
 
-from roomer.models import get_college_code
+
+def get_college_code(college_str):
+    for college in COLLEGE_CHOICES:
+        if college[1] == college_str:
+            return college[0]
+    return ''
 
 with open('old_rooms.json') as f:
     rooms = json.load(f)
@@ -19,15 +29,18 @@ with open('old_rooms.json') as f:
 
     room_objs = []
 
-    for room in rooms[:50]:
+    for room in rooms:
         if 'name' in room:
             name = room['name']
 
             associated = []
 
-            for other_room in rooms['rooms']:
-                if 'name' in other_room and other_room['name'] != name:
-                    associated.append(name_to_ids[other_room['name']])
+            for other_room in room['rooms']:
+                if other_room != name:
+                    try:
+                        associated.append(name_to_ids[other_room])
+                    except KeyError:
+                        print("Couldn't find associated room " + other_room + ".")
 
             new_room = {
                 'model': 'roomer.room',
@@ -43,5 +56,5 @@ with open('old_rooms.json') as f:
 
             room_objs.append(new_room)
 
-    with open('room.json') as g:
-        json.dumps(g, room_objs)
+    with open('rooms.json', 'w') as g:
+        json.dump(room_objs, g)

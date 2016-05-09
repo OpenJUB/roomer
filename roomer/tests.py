@@ -21,7 +21,7 @@ class UserProfileTestCase(TestCase):
             seniority=3,
             year=16,
             major='Computer Science',
-            country='Indie',
+            country='India',
             old_college='ME',
             college='ME',
         )
@@ -75,3 +75,54 @@ class UserProfileTestCase(TestCase):
         self.assertSequenceEqual(a.roommates.all(), [b, c])
         self.assertSequenceEqual(b.roommates.all(), [a, c])
         self.assertSequenceEqual(c.roommates.all(), [a, b])
+
+    def test_points_no_roommates_1(self):
+        a = UserProfile.objects.get(username='a')
+        a.save()
+
+        self.assertEqual(2, a.points)
+
+    def test_points_no_roommates_2(self):
+        b = UserProfile.objects.get(username='b')
+        b.save()
+
+        self.assertEqual(3.5, b.points)
+
+    def test_points_no_roommates_3(self):
+        c = UserProfile.objects.get(username='c')
+        c.save()
+
+        self.assertEqual(1, c.points)
+
+    def test_points_1_roommate(self):
+        a = UserProfile.objects.get(username='a')
+        b = UserProfile.objects.get(username='b')
+
+        a.send_roommate_request(b)
+
+        b.inbox.first().accept()
+        a.save()  # Required for updating points
+        b.save()
+
+        self.assertEqual(8.5, b.points)
+        self.assertEqual(8.5, a.points)
+
+    def test_points_2_roommates(self):
+        a = UserProfile.objects.get(username='a')
+        b = UserProfile.objects.get(username='b')
+        c = UserProfile.objects.get(username='c')
+
+        a.send_roommate_request(b)
+        b.inbox.first().accept()
+
+        a.send_roommate_request(c)
+        c.inbox.first().accept()
+
+        a.save()
+        b.save()
+        c.save()
+
+        self.assertEqual(12, a.points)
+        self.assertEqual(12, b.points)
+        self.assertEqual(12, c.points)
+

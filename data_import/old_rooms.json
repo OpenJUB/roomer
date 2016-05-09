@@ -1,8 +1,20 @@
 [
   {
-    "_id": "572b3dfab539094e6fdd7d71",
+    "college": "Krupp",
+    "block": "A",
+    "floor": 1,
+    "type": "triple",
+    "name": "KA-101",
+    "isAvailable": true,
+    "applicants": 0,
+    "isDisabled": false,
+    "_id": "shrguiksehzuikhsef",
     "assignedTo": [],
-    "rooms": [],
+    "rooms": [
+      "KA-101",
+      "KA-102",
+      "KA-103"
+    ],
     "__v": 0
   },
   {
