@@ -18,16 +18,18 @@ def get_college_code(college_str):
 with open('old_rooms.json') as f:
     rooms = json.load(f)
 
-    pk = 1
+    room_pk = 1
+    tag_pk = 1
 
     name_to_ids = {}
 
     for room in rooms:
         if 'name' in room:
-            name_to_ids[room['name']] = pk
-            pk += 1
+            name_to_ids[room['name']] = room_pk
+            room_pk += 1
 
     room_objs = []
+    tag_objs = []
 
     for room in rooms:
         if 'name' in room:
@@ -54,7 +56,23 @@ with open('old_rooms.json') as f:
                 }
             }
 
+            if 0 <= len(associated) <= 2:
+                assoc = len(associated)
+
+                new_tag = {
+                    "model": "roomer.roomtag",
+                    "pk": 19,
+                    "fields": {
+                        "room": name_to_ids[name],
+                        "generated": True
+                    }
+                }
+
+                new_tag['fields']['tag'] = 'single' if assoc == 0 else ('double' if assoc == 1 else 'triple')
+
+                tag_objs.append(new_tag)
+
             room_objs.append(new_room)
 
     with open('rooms.json', 'w') as g:
-        json.dump(room_objs, g)
+        json.dump(room_objs + tag_objs, g)
