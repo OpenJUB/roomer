@@ -163,7 +163,7 @@ class Room(models.Model):
             )]
     )
 
-    college = models.ForeignKey('College')
+    college = CollegeField()
 
     floor = models.IntegerField()
     block = models.CharField(max_length=1)
@@ -194,17 +194,16 @@ class Room(models.Model):
 
         self.tags.bulk_create(new_tags)
 
-    def save(self, **kwargs):
+    def save(self, update_associated=False, **kwargs):
         # Save ourselves if we're not in the DB, so we can use m2m field
         if not self.pk:
             super(Room, self).save(kwargs)
 
-        # Update boolean fields
-        for room in self.associated.all():
-            room.update_generated_tags()
-            room.save()
-
         self.update_generated_tags()
+
+        if update_associated:
+            for room in self.associated.all():
+                room.save(update_associated=False)
 
         super(Room, self).save(kwargs)
 
