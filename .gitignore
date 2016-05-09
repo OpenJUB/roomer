@@ -68,3 +68,6 @@ roomer/prod_settings.py
 
 # Exclude IDEA IDE files
 .idea/
+
+# Exclude generated Room fixture
+data_import/rooms.json
