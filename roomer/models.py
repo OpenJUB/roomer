@@ -1,10 +1,12 @@
 from django.conf import settings
 from django.db import models
+from django.db.models import Sum
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator, ValidationError
-from utils import get_college_code
+from .utils import get_college_code
 from .regions import regions
 
+from decimal import Decimal
 
 class CollegeField(models.CharField):
     def __init__(self, *args, **kwargs):
@@ -89,44 +91,52 @@ class UserProfile(AbstractUser):
 
         return "other"
 
+    def get_user_points(self):
+        points = self.seniority + self.extra_points
+
+        if self.old_college == self.college:
+            points += self.COLLEGE_SPIRIT_POINTS
+
+        return points
+
     def update_points(self, ignore_roommates=False):
         """
             Updates the points for this user, and all of his roommates
             :arg ignore_roommates Don't update this users' roommates. Defaults to False
         """
-        if not self.points:
-            return
 
-        # Start with seniority
-        self.points = self.seniority
-        self.points += self.extra_points
+        roommates = list(self.roommates.all())
+        roommates.append(self)
 
-        # Add college spirit
-        if self.college == self.old_college:
-            self.points += self.COLLEGE_SPIRIT_POINTS
+        countries = set([val.country for val in roommates])
+        majors = set([val.major for val in roommates])
+        regions = set([val.get_region() for val in roommates])
+        user_points = [val.get_user_points() for val in roommates]
 
-        # Only check the m2m manager if we're saved already
-        if self.pk:
+        self.points = Decimal(sum(user_points))
+
+        if len(countries) > 1:
+            self.points += Decimal((self.COUNTRY_POINTS * len(countries)))
+
+        if len(majors) > 1:
+            self.points += Decimal((self.MAJOR_POINTS * len(majors)))
+
+        if len(regions) > 1:
+            self.points += Decimal((self.REGION_POINTS * len(regions)))
+
+        # Add in the roommates
+        if not ignore_roommates:
             for mate in self.roommates.all():
-                # Update the roommates' points as well
-                if not ignore_roommates:
-                    mate.update_points()
+                mate.save(ignore_roommates=True)
 
-                # Nationality points
-                if self.country != mate.country:
-                    self.points += self.COUNTRY_POINTS
+    def save(self, ignore_roommates=False, **kwargs):
 
-                # Region points
-                if self.get_region() != mate.get_region():
-                    self.points += self.REGION_POINTS
+        # Save if not already
+        if not self.pk:
+            super(UserProfile, self).save(**kwargs)  # Call the "real" save() method.
 
-                # Major points
-                if self.major != mate.major:
-                    self.points += self.MAJOR_POINTS
-
-    def save(self, *args, **kwargs):
-        self.update_points()
-        super(UserProfile, self).save(*args, **kwargs)  # Call the "real" save() method.
+        self.update_points(ignore_roommates)
+        super(UserProfile, self).save(**kwargs)  # Call the "real" save() method.
 
     def __str__(self):
         if self.get_full_name():
