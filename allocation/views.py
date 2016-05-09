@@ -4,19 +4,43 @@ from django.views.decorators.http import require_http_methods
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
-
 from .models import Phase, CollegePhase, RoomPhase
 from .forms import CollegePrefForm
 from .utils import *
 
+
 @require_http_methods(['POST', 'GET'])
 @login_required
-def overview(request):
+def overview_rooms(request):
+    now = datetime.datetime.now()
+    profile = request.user
+
+    windows = RoomPhase.objects.filter(start__lte=now, end_gt=now).order_by('end')
+    current_window = windows.first()
+
+    context = {
+        'window': current_window,
+        'profile': profile
+    }
+
+    if current_window:
+        context['can_choose_room'] = current_window.can_update(profile)
+    else:
+        context['can_choose_room'] = False
+
+    if request.method == 'POST' and current_window and current_window.is_open():
+        pass
+
+
+
+@require_http_methods(['POST', 'GET'])
+@login_required
+def overview_college(request):
     now = datetime.datetime.now()
     profile = request.user
 
     # Get currently active phase
-    windows = UpdateWindow.objects.filter(start__lte=now, end__gt=now).order_by('end')
+    windows = CollegePhase.objects.filter(start__lte=now, end__gt=now).order_by('end')
     current_window = windows.first()
 
     context = {
@@ -26,7 +50,7 @@ def overview(request):
     }
 
     if current_window:
-        context['can_change_college'] = current_window.can_update_colleges(profile)
+        context['can_change_college'] = current_window.can_update(profile)
     else:
         context['can_change_college'] = False
 
@@ -35,7 +59,7 @@ def overview(request):
             if profile.college == '' and profile.old_college != '':
                 profile.college = profile.old_college
                 profile.save()
-                return redirect(overview)
+                return redirect(overview_college)
         elif current_window.live_allocation:
             new_college = request.POST.get('college', default='')
 

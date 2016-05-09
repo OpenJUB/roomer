@@ -21,6 +21,21 @@ class CollegeField(models.CharField):
         super(CollegeField, self).__init__(*args, max_length=2, choices=settings.COLLEGE_CHOICES, **kwargs)
 
 
+class IntegerRangeField(models.IntegerField):
+    def __init__(self, verbose_name=None, name=None, min_value=None, max_value=None, **kwargs):
+        self.min_value, self.max_value = min_value, max_value
+        models.IntegerField.__init__(self, verbose_name, name, **kwargs)
+
+    def formfield(self, **kwargs):
+        defaults = {'min_value': self.min_value, 'max_value':self.max_value}
+        defaults.update(kwargs)
+        return super(IntegerRangeField, self).formfield(**defaults)
+
+
+class UserPreference(models.Model):
+    preference_level = IntegerRangeField(min_value=1, max_value=7)
+
+
 class UserProfile(AbstractUser):
     REQUEST_INVALID = 0
     REQUEST_SENT = 1
@@ -34,6 +49,8 @@ class UserProfile(AbstractUser):
     year = models.IntegerField(editable=False)
     major = models.CharField(max_length=128, editable=False)
     country = models.CharField(max_length=64, editable=False)
+    allocated_room = models.OneToOneField(Room)
+    allocation_preferences = models.ManyToManyField(Room, through=UserPreference)
 
     # TODO Write a custom validator. format like: "C3:NM:KR:ME"
     college_pref = models.CharField(max_length=11, blank=True)
@@ -145,6 +162,10 @@ class UserProfile(AbstractUser):
             return self.get_username()
 
 
+class RoomManager(models.Model):
+    pass
+
+
 class Room(models.Model):
     ROOM_CODE_REGEX = r'[A-Z]{2}-\d{3}'
 
@@ -154,6 +175,8 @@ class Room(models.Model):
     TALL_ROOM_TAG = 'tall'
     QUIET_ROOM_TAG = 'quiet'
     DISABLED_ROOM_TAG = 'disabled'
+
+    manager = RoomManager()
 
     # TODO Write format validator
     code = models.CharField(
