@@ -2,16 +2,8 @@ from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator, ValidationError
-
-
+from utils import get_college_code
 from .regions import regions
-
-
-def get_college_code(college_str):
-    for college in settings.COLLEGE_CHOICES:
-        if college[1] == college_str:
-            return college[0]
-    return ''
 
 
 class CollegeField(models.CharField):
@@ -134,7 +126,7 @@ class UserProfile(AbstractUser):
 
     def save(self, *args, **kwargs):
         self.update_points()
-        super(UserProfile, self).save(*args, **kwargs) # Call the "real" save() method.
+        super(UserProfile, self).save(*args, **kwargs)  # Call the "real" save() method.
 
     def __str__(self):
         if self.get_full_name():
@@ -259,7 +251,6 @@ class RoommateRequest(models.Model):
                 self.receiver.roommates.add(mate)
 
         self.receiver.save()
-
 
         # Also add the new roommate to our other roommates
         for mate in self.receiver.roommates.all():
