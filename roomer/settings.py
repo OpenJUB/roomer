@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'collegechooser',
+    'roommates',
     'roomer',
 ]
 
@@ -53,6 +54,7 @@ MIDDLEWARE_CLASSES = [
 ]
 
 ROOT_URLCONF = 'roomer.urls'
+LOGIN_REDIRECT_URL = "home"
 
 TEMPLATES = [
     {
@@ -104,15 +106,21 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Custom UserProfile
-AUTH_PROFILE_MODULE = "roomer.UserProfile"
+# Custom User model
+AUTH_USER_MODEL = "roomer.UserProfile"
+
+# OpenJUB auth
+AUTHENTICATION_BACKENDS = ( 'django.contrib.auth.backends.ModelBackend',
+                            'roomer.ojub_auth.OjubBackend')
+
+LOGIN_URL = "login"
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Berlin'
 
 USE_I18N = True
 
@@ -125,3 +133,23 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_URL = '/static/'
+
+COLLEGE_CODES = ['', 'NM', 'ME', 'KR', 'C3']
+
+# College choices /short_name, long_name, capacity)
+COLLEGE_CHOICES = [
+    ('NM', 'Nordmetall'),
+    ('C3', 'C3'),
+    ('KR', 'Krupp'),
+    ('ME', 'Mercator')
+]
+
+COLLEGE_CAPACITIES = [
+    ('NM', 1),
+    ('C3', 2),
+    ('KR', 3),
+    ('ME', 4)
+]
+
+# Maximum filling of the college, in percent
+MAX_COLLEGE_FILL = 75

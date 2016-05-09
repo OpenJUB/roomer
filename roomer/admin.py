@@ -1,20 +1,22 @@
 from django.contrib import admin
-from django.contrib.auth.models import User
-from django.contrib.auth.admin import UserAdmin
-from roomer.models import UserProfile, RoommateRequest
-
-admin.site.unregister(User)
+from roomer.models import UserProfile, RoommateRequest, Room, RoomTag, College
 
 
-class UserProfileInline(admin.StackedInline):
+class UserProfileAdmin(admin.ModelAdmin):
+    readonly_fields = ('points', 'year', 'major', 'country', 'old_college', 'seniority')
     model = UserProfile
 
-
-class UserProfileAdmin(UserAdmin):
-    inlines = [UserProfileInline, ]
-
-admin.site.register(User, UserAdmin)
-
-
-admin.site.register(UserProfile)
+admin.site.register(UserProfile, UserProfileAdmin)
 admin.site.register(RoommateRequest)
+
+
+class TagInline(admin.TabularInline):
+    model = RoomTag
+    fields = ['tag']
+
+
+class RoomAdmin(admin.ModelAdmin):
+    inlines = [TagInline]
+
+admin.site.register(Room, RoomAdmin)
+admin.site.register(College)
