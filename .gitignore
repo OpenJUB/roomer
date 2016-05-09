@@ -70,5 +70,5 @@ roomer/prod_settings.py
 .idea/
 
 # Exclude generated Room fixture
-roomer/fixtures/rooms.json
-data_import/old_rooms.json
+roomer/fixtures/*.json
+data_import/*.json
