@@ -19,7 +19,6 @@ with open('old_rooms.json') as f:
     rooms = json.load(f)
 
     room_pk = 1
-    tag_pk = 1
 
     name_to_ids = {}
 
@@ -56,19 +55,27 @@ with open('old_rooms.json') as f:
                 }
             }
 
-            if 0 <= len(associated) <= 2:
+            if len(associated) <= 2:
                 assoc = len(associated)
 
+                if assoc == 0:
+                    tag = 'single'
+                elif assoc == 1:
+                    tag = 'double'
+                elif assoc == 2:
+                    tag = 'triple'
+                else:
+                    tag = 'error'
+
                 new_tag = {
-                    "model": "roomer.roomtag",
-                    "pk": 19,
-                    "fields": {
-                        "room": name_to_ids[name],
-                        "generated": True
+                    'model': 'roomer.roomtag',
+                    'pk': name_to_ids[name],
+                    'fields': {
+                        'room': name_to_ids[name],
+                        'generated': True,
+                        'tag': tag
                     }
                 }
-
-                new_tag['fields']['tag'] = 'single' if assoc == 0 else ('double' if assoc == 1 else 'triple')
 
                 tag_objs.append(new_tag)
 
