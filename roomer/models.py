@@ -133,10 +133,10 @@ class UserProfile(AbstractUser):
 
         # Save if not already
         if not self.pk:
-            super(UserProfile, self).save(**kwargs)  # Call the "real" save() method.
+            super(UserProfile, self).save()  # Call the "real" save() method.
 
         self.update_points(ignore_roommates)
-        super(UserProfile, self).save(**kwargs)  # Call the "real" save() method.
+        super(UserProfile, self).save()  # Call the "real" save() method.
 
     def __str__(self):
         if self.get_full_name():
