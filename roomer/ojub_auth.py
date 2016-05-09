@@ -67,6 +67,7 @@ class OjubBackend(object):
 
         return user
 
+
     def get_user(self, user_id):
         user_model = get_user_model()
         try:
