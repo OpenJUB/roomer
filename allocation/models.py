@@ -41,6 +41,18 @@ class Phase(models.Model):
                 return "Ended on " + str(self.end)
 
 
+class RoomPhaseManager(models.Manager):
+    def get_current(self):
+        # Get currently active phase
+        now = datetime.now()
+        phases = super(RoomPhaseManager, self).get_queryset().filter(start__lte=now, end__gt=now).order_by('end')
+        return phases.first()
+
+    def get_future_phases(self):
+        now = datetime.now()
+        return super(RoomPhaseManager, self).get_queryset().filter(end__gte=now)
+
+
 class RoomPhase(Phase):
     """
     Model for Room Phases (Quite Block Allocation, Tall Room
@@ -50,6 +62,9 @@ class RoomPhase(Phase):
     is_single_phase = models.BooleanField(default=False)  # For Psychos
     is_triple_phase = models.BooleanField(default=False)  # Apparently triple rooms need their own phase
     points_limit = models.FloatField(default=0, blank=True)  # Setting points. Default 0 to allow everybody
+
+    # This allows us to simply use get_current
+    objects = RoomPhaseManager()
 
     def can_update(self, profile):
         if self.is_open():
@@ -64,6 +79,10 @@ class RoomPhase(Phase):
         # Check for right year of study
         now = datetime.now()
 
+        if user is None:
+            error.append('You are not a user. WTF.')
+            return False, error
+
         # Check user generally eligible
         if user.year >= now.year and not user.is_whitelisted:
             error.append('You are a third year student and therefore not eligible for this round.')
@@ -75,7 +94,7 @@ class RoomPhase(Phase):
 
         # Check user eligible for tall room phase
         if self.is_tall_phase and not user.is_tall:
-            error.append('A tall room phase is currently active. However, you are not tall.'
+            error.append('A tall room phase is currently active. However, you are not tall. '
                          'If you believe that you are tall, send your username to housing@ju-u.sg')
 
         if self.is_single_phase:
@@ -110,17 +129,3 @@ class RoomPhase(Phase):
             return False, 'Not a double room.'
 
         return True, 'All good!'
-
-
-
-class CollegePhase(Phase):
-    """
-    Model for College selection phase
-    """
-    def can_update(self, profile):
-        if self.is_open():
-            if self.live_allocation:
-                return True
-            return profile.college == ''
-        else:
-            return False
