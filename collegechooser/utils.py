@@ -53,10 +53,16 @@ def get_next_phases(user=None):
         })
 
     for phase in RoomPhase.objects.get_future_phases():
-        phases.append({
+        new_phase = {
             'name': phase.name,
-            'eligible': lambda (x, _): x(phase.is_user_eligible(user)),
             'phase': phase
-        })
+        }
+
+        eligible, errors = phase.is_user_eligible(user)
+
+        new_phase['eligible'] = eligible
+        new_phase['errors'] = errors
+
+        phases.append(new_phase)
 
     return phases
