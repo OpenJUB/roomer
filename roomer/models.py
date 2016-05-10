@@ -8,6 +8,7 @@ from .regions import regions
 
 from decimal import Decimal
 
+
 class CollegeField(models.CharField):
     def __init__(self, *args, **kwargs):
 
@@ -27,7 +28,7 @@ class IntegerRangeField(models.IntegerField):
         models.IntegerField.__init__(self, verbose_name, name, **kwargs)
 
     def formfield(self, **kwargs):
-        defaults = {'min_value': self.min_value, 'max_value':self.max_value}
+        defaults = {'min_value': self.min_value, 'max_value': self.max_value}
         defaults.update(kwargs)
         return super(IntegerRangeField, self).formfield(**defaults)
 
@@ -165,7 +166,11 @@ class UserProfile(AbstractUser):
 
 
 class RoomManager(models.Model):
-    pass
+    """
+    Custom manager for the Room model
+    """
+    def get_by_college(self, college):
+        return super(RoomManager, self).get_query_set().filter(college=college)
 
 
 class Room(models.Model):
@@ -178,7 +183,8 @@ class Room(models.Model):
     QUIET_ROOM_TAG = 'quiet'
     DISABLED_ROOM_TAG = 'disabled'
 
-    manager = RoomManager()
+    objects = models.Manager()
+    rooms = RoomManager()
 
     # TODO Write format validator
     code = models.CharField(
