@@ -44,12 +44,12 @@ class Phase(models.Model):
 class RoomPhaseManager(models.Manager):
     def get_current(self):
         # Get currently active phase
-        now = datetime.now()
+        now = timezone.now()
         phases = super(RoomPhaseManager, self).get_queryset().filter(start__lte=now, end__gt=now).order_by('end')
         return phases.first()
 
     def get_future_phases(self):
-        now = datetime.now()
+        now = timezone.now()
         return super(RoomPhaseManager, self).get_queryset().filter(end__gte=now)
 
 
@@ -77,7 +77,7 @@ class RoomPhase(Phase):
         error = []
 
         # Check for right year of study
-        now = datetime.now()
+        now = timezone.now()
 
         if user is None:
             error.append('You are not a user. WTF.')

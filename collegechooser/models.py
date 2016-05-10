@@ -9,7 +9,7 @@ from datetime import datetime
 
 class UpdateWindowManager(models.Manager):
     def get_future_phases(self):
-        now = datetime.now()
+        now = timezone.now()
         return super(UpdateWindowManager, self).get_queryset().filter(end__gte=now)
 
 class UpdateWindow(models.Model):
