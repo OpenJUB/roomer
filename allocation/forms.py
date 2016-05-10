@@ -1,6 +1,7 @@
-from django.conf import settings
 from django import forms
+from django.utils import timezone
 
+from allocation.models import RoomPhase
 from roomer.models import Room, College
 
 
@@ -10,89 +11,53 @@ class RoomField(forms.ChoiceField):
             del kwargs['choices']
 
         super(RoomField, self).__init__(*args,
-                                        choices=Room.rooms.get_by_college(college),
+                                        choices=((room.code, room.code) for room in Room.rooms.get_by_college(college)),
                                         **kwargs)
 
 
 class RoomPrefForm(forms.Form):
-    def __init__(self, user, *args, **kwargs):
-        self.user_session = user
-        self.pref_1 = RoomField(self.user_session.college, label="1st Preference")
-        self.pref_2 = RoomField(self.user_session.college, label="2nd Preference")
-        self.pref_3 = RoomField(self.user_session.college, label="3rd Preference")
-        self.pref_4 = RoomField(self.user_session.college, label="4th Preference")
-        self.pref_5 = RoomField(self.user_session.college, label="5th Preference")
-        self.pref_6 = RoomField(self.user_session.college, label="6th Preference")
-        self.pref_7 = RoomField(self.user_session.college, label="7th Preference")
+    def __init__(self, *args, **kwargs):
+        self.user_session = kwargs.pop('user', None)
+        self.room_code = RoomField(self.user_session.college, label="Room choice:")
 
         super(RoomPrefForm, self).__init__(*args, **kwargs)
 
+        self.fields['room_code'] = self.room_code
+
     def clean(self):
         cleaned_data = super(RoomPrefForm, self).clean()
-        preferences = [
-            cleaned_data.get('pref_1'),
-            cleaned_data.get('pref_2'),
-            cleaned_data.get('pref_3'),
-            cleaned_data.get('pref_4'),
-            cleaned_data.get('pref_5'),
-            cleaned_data.get('pref_6'),
-            cleaned_data.get('pref_7')
-        ]
-        if any(preferences.count(x) > 1 for x in preferences):
-            raise forms.ValidationError("You can't select the same room as two preferences")
-        self.cleaned_data = cleaned_data
 
+        now = timezone.now()
+        phases = RoomPhase.objects.filter(start__lte=now, end__gt=now).order_by('end')
+        current_phase = phases.first()
 
-class CollegeField(forms.ChoiceField):
-    def __init__(self, *args, **kwargs):
-        if 'choices' in kwargs:
-            del kwargs['choices']
+        if self.user_session is None:
+            raise forms.ValidationError('You must be signed in to submit a room choice.')
 
-        super(CollegeField, self).__init__(*args, choices=settings.COLLEGE_CHOICES, **kwargs)
+        if current_phase is None:
+            raise forms.ValidationError('No room allocation is currently being done.')
 
+        if not current_phase.is_open():
+            raise forms.ValidationError('This phase is not open at the moment.')
 
-class CollegePrefForm(forms.Form):
-    pref1 = CollegeField(label="Preference 1")
-    pref2 = CollegeField(label="Preference 2")
-    pref3 = CollegeField(label="Preference 3")
-    pref4 = CollegeField(label="Preference 4")
+        # Check user eligible for phase
+        (eligible, errors) = current_phase.is_user_eligible(self.user_session)
 
-    def clean(self):
-        cleaned_data = super(CollegePrefForm, self).clean()
+        if not eligible:
+            raise forms.ValidationError('You are not eligible for this phase for the following reasons:' + errors)
 
-        prefs = [
-            cleaned_data.get('pref1'),
-            cleaned_data.get('pref2'),
-            cleaned_data.get('pref3'),
-            cleaned_data.get('pref4')
-        ]
+        try:
+            room = Room.objects.get(code=cleaned_data.get('room_code'))
+        except Room.DoesNotExist:
+            raise forms.ValidationError('The given room does not exist.')
 
-        # Check for dupes
-        if any(prefs.count(x) > 1 for x in prefs):
-            raise forms.ValidationError(
-                "You can't select the same college as two preferences."
-            )
+        if room.college != self.user_session.college:
+            raise forms.ValidationError('This room is not in your college.')
+
+        (alloc, msg) = current_phase.is_allocating_room(room)
+
+        if not alloc:
+            raise forms.ValidationError(msg)
 
         self.cleaned_data = cleaned_data
 
-    def to_pref_string(self):
-        return "{0}:{1}:{2}:{3}".format(
-            self.cleaned_data.get('pref1'),
-            self.cleaned_data.get('pref2'),
-            self.cleaned_data.get('pref3'),
-            self.cleaned_data.get('pref4')
-        )
-
-    @staticmethod
-    def from_pref_string(pref_string):
-        prefs = pref_string.split(":")
-
-        if len(prefs) != 4:
-            return CollegePrefForm()
-
-        return CollegePrefForm(initial={
-            'pref1': prefs[0],
-            'pref2': prefs[1],
-            'pref3': prefs[2],
-            'pref4': prefs[3],
-        })

@@ -1,0 +1,21 @@
+{%  extends "base.html" %}
+{% block content %}
+    <h1>Room application</h1>
+    {% if preferences %}
+        <ol>
+            {% for pref in preferences %}
+                <li>
+                    {{ pref.room.code }}
+                    <a href="{% url 'room-request-up' pref.pk %}">Up</a>
+                    <a href="{% url 'room-request-down' pref.pk %}">Down</a>
+                    <a href="{% url 'room-request-remove' pref.pk %}">Remove</a>
+                </li>
+            {% endfor %}
+        </ol>
+    {% else %}
+        <p>You have not applied to any rooms. <a href="{% url 'room-request-send' %}">Apply now!</a></p>
+    {% endif %}
+    <h1>Apply for a room</h1>
+    <a href="{% url 'room-request-send' %}">Apply</a>
+
+{%  endblock %}

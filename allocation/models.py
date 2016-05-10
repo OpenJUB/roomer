@@ -5,6 +5,7 @@ from datetime import datetime
 
 
 # Create your models here.
+from roomer.models import UserProfile, Room
 
 
 class Phase(models.Model):
@@ -14,7 +15,7 @@ class Phase(models.Model):
     class Meta:
         abstract = True
 
-    name = models.CharField(blank=False)
+    name = models.CharField(max_length=64, blank=False)
     start = models.DateTimeField()
     end = models.DateTimeField()
     live_allocation = models.BooleanField(default=False)
@@ -56,6 +57,49 @@ class RoomPhase(Phase):
                 return True
             else:
                 return False
+
+    def is_user_eligible(self, user: UserProfile):
+        error = []
+
+        # Check for right year of study
+        now = datetime.now()
+
+        # TODO Allow whitelisted users
+
+        # Check user generally eligible
+        if user.year >= now.year:
+            error.append('You are a third year student and therefore not eligible for this round.')
+
+        # Check user eligible by points
+        if user.points < self.points_limit:
+            error.append('You do not have enough points to choose a room in this round. '
+                         'You have {0} of {1} required points.'.format(user.points, self.points_limit))
+
+        # Check user eligible for tall room phase
+        if self.is_tall_phase and not user.is_tall:
+            error.append('A tall room phase is currently active. However, you are not tall.'
+                         'If you believe that you are tall, send your username to housing@ju-u.sg')
+
+        return not len(error) > 0, error
+
+    def is_allocating_room(self, room: Room):
+        if self.is_tall_phase:
+            if not room.has_tag(room.TALL_ROOM_TAG):
+                return False, 'Not a tall room.'
+
+        if self.is_triple_phase:
+            if not room.has_tag(room.TRIPLE_ROOM_TAG):
+                return False, 'Not a triple room.'
+
+        if self.is_single_phase:
+            if not room.has_tag(room.SINGLE_ROOM_TAG):
+                return False, 'Not a single room.'
+
+        if not room.has_tag(room.DOUBLE_ROOM_TAG):
+            return False, 'Not a double room.'
+
+        return True, 'All good!'
+
 
 
 class CollegePhase(Phase):
