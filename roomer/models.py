@@ -49,8 +49,8 @@ class UserProfile(AbstractUser):
     year = models.IntegerField(editable=False)
     major = models.CharField(max_length=128, editable=False)
     country = models.CharField(max_length=64, editable=False)
-    allocated_room = models.OneToOneField(Room)
-    allocation_preferences = models.ManyToManyField(Room, through=UserPreference)
+    allocated_room = models.OneToOneField("Room")
+    allocation_preferences = models.ManyToManyField("Room", through="UserPreference")
 
     # TODO Write a custom validator. format like: "C3:NM:KR:ME"
     college_pref = models.CharField(max_length=11, blank=True)
