@@ -3,4 +3,4 @@ Django==1.9.6
 
 # For OpenJUB auth backend
 requests==2.10.0
-
+munkres==1.0.7
