@@ -7,10 +7,13 @@
 <body>
     <div>
     {% if user.is_authenticated %}
-        Logged in as {{ user.get_full_name }} <a href="{%  url 'logout' %}">Log out</a>
+        Logged in as {{ user.get_full_name }} ({{ user.points }} points) <a href="{%  url 'logout' %}">Log out</a>
     {% else %}
         <a href="{%  url 'login' %}">Log in</a>
     {%  endif %}
+    | <a href="{% url 'college-overview' %}">College Allocation</a>
+    | <a href="{% url 'roommate-overview' %}">Roommate Requests</a>
+    | <a href="{% url 'room-request-overview' %}">Room Applications</a>
     </div>
     {%  block content %}
         <h1>Roomer</h1>
