@@ -58,7 +58,7 @@ class RoomPhase(Phase):
             else:
                 return False
 
-    def is_user_eligible(self, user: UserProfile):
+    def is_user_eligible(self, user):
         error = []
 
         # Check for right year of study
@@ -93,7 +93,7 @@ class RoomPhase(Phase):
 
         return not len(error) > 0, error
 
-    def is_allocating_room(self, room: Room):
+    def is_allocating_room(self, room):
         if self.is_tall_phase:
             if not room.has_tag(room.TALL_ROOM_TAG):
                 return False, 'Not a tall room.'
