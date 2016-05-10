@@ -92,7 +92,10 @@ class UserProfile(AbstractUser):
     major = models.CharField(max_length=128, editable=False)
     country = models.CharField(max_length=64, editable=False)
 
+    # To allow foundation years to participate
+    is_whitelisted = models.BooleanField(default=False)
     is_tall = models.BooleanField(default=False)
+
     allocated_room = models.OneToOneField("Room", related_name='assigned_user', blank=True, null=True)
     allocation_preferences = models.ManyToManyField("Room", through="UserPreference", blank=True)
 
@@ -108,7 +111,7 @@ class UserProfile(AbstractUser):
     old_college = CollegeField(editable=False)
     college = CollegeField(blank=True)
 
-    points = models.DecimalField(default=0, decimal_places=3, max_digits=6, blank=True, editable=False)
+    points = models.DecimalField(default=0, decimal_places=1, max_digits=6, blank=True, editable=False)
     roommates = models.ManyToManyField("self", blank=True)
 
     def send_roommate_request(self, other):
@@ -201,11 +204,8 @@ class UserProfile(AbstractUser):
         return self.allocated_room is None
 
     def save(self, ignore_roommates=False, **kwargs):
-
-        # Save if not already
-        if not self.pk:
-            super(UserProfile, self).save()  # Call the "real" save() method.
-
+        # This is required to update the m2m manager.
+        super(UserProfile, self).save()  # Call the "real" save() method.
         self.update_points(ignore_roommates)
         super(UserProfile, self).save()  # Call the "real" save() method.
 

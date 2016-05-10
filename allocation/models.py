@@ -64,10 +64,8 @@ class RoomPhase(Phase):
         # Check for right year of study
         now = datetime.now()
 
-        # TODO Allow whitelisted users
-
         # Check user generally eligible
-        if user.year >= now.year:
+        if user.year >= now.year and not user.is_whitelisted:
             error.append('You are a third year student and therefore not eligible for this round.')
 
         # Check user eligible by points
