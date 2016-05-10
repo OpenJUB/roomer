@@ -120,7 +120,7 @@ class UserProfile(AbstractUser):
         """
 
         # Once you have a room, you can't change roommates
-        if self.can_change_roommates():
+        if not self.can_change_roommates():
             return self.REQUEST_INVALID
 
         # You can't room with yourself
