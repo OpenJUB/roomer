@@ -18,5 +18,7 @@ urlpatterns = [
         ]
     )),
 
-    url(r'^request/send$', invite, name='roommate-invite')
+    url(r'^request/send$', invite, name='roommate-invite'),
+
+    url(r'^autocomplete$', autocomplete, name='user-autocomplete')
 ]
