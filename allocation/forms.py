@@ -44,7 +44,7 @@ class RoomPrefForm(forms.Form):
         (eligible, errors) = current_phase.is_user_eligible(self.user_session)
 
         if not eligible:
-            raise forms.ValidationError('You are not eligible for this phase for the following reasons:' + errors)
+            raise forms.ValidationError(['You are not eligible for this phase for the following reasons:'] + errors)
 
         try:
             room = Room.objects.get(code=cleaned_data.get('room_code'))

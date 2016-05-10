@@ -80,6 +80,19 @@ class RoomPhase(Phase):
             error.append('A tall room phase is currently active. However, you are not tall.'
                          'If you believe that you are tall, send your username to housing@ju-u.sg')
 
+        if self.is_single_phase:
+            required_count = 0
+        elif self.is_triple_phase:
+            required_count = 2
+        else:
+            required_count = 1
+
+        if user.roommates.count() != required_count:
+            error.append('You have {0} roommate(s), but the current phase requires {1} roommate(s).'.format(
+                user.roommates.count(),
+                required_count
+            ))
+
         return not len(error) > 0, error
 
     def is_allocating_room(self, room: Room):
