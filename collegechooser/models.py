@@ -7,10 +7,16 @@ from datetime import datetime
 
 # Create your models here.
 
+class UpdateWindowManager(models.Manager):
+    def get_future_phases(self):
+        now = timezone.now()
+        return super(UpdateWindowManager, self).get_queryset().filter(end__gte=now)
 
 class UpdateWindow(models.Model):
     start = models.DateTimeField()
     end = models.DateTimeField()
+
+    objects = UpdateWindowManager()
 
     # Allocate first come first serve strategy, but only for unallocated students
     live_allocation = models.BooleanField(default=False)

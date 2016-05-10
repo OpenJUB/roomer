@@ -12,10 +12,18 @@
                 </li>
             {% endfor %}
         </ol>
+        <p>
+            {% if can_apply %}
+                <a href="{% url 'room-request-send' %}">Add another</a>
+            {% endif %}
+        </p>
     {% else %}
-        <p>You have not applied to any rooms. <a href="{% url 'room-request-send' %}">Apply now!</a></p>
+        <p>
+            You have not applied to any rooms.
+            {% if can_apply %}
+                <a href="{% url 'room-request-send' %}">Apply now!</a>
+            {% endif %}
+        </p>
     {% endif %}
-    <h1>Apply for a room</h1>
-    <a href="{% url 'room-request-send' %}">Apply</a>
 
 {%  endblock %}

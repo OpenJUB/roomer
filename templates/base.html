@@ -6,22 +6,31 @@
 </head>
 <body>
     <div>
-    {% if user.is_authenticated %}
-        Logged in as {{ user.get_full_name }} ({{ user.points }} points) <a href="{%  url 'logout' %}">Log out</a>
-    {% else %}
-        <a href="{%  url 'login' %}">Log in</a>
-    {%  endif %}
-    | <a href="{% url 'college-overview' %}">College Allocation</a>
-    | <a href="{% url 'roommate-overview' %}">Roommate Requests</a>
-    | <a href="{% url 'room-request-overview' %}">Room Applications</a>
+        <a href="{% url 'home' %}">Home</a>
+        | <a href="{% url 'college-overview' %}">College Allocation</a>
+        | <a href="{% url 'roommate-overview' %}">Roommate Requests</a>
+        | <a href="{% url 'room-request-overview' %}">Room Applications</a>
+
+        {% if user.is_authenticated %}
+            {% if user.is_staff %}
+            | <span><a href="{% url 'admin:index' %}">Django Admin</a></span>
+            {% endif %}
+            | <span>Logged in as {{ user.get_full_name }} ({{ user.points }} points) <a href="{%  url 'logout' %}">Log out</a></span>
+        {% else %}
+            | <a href="{%  url 'login' %}">Log in</a>
+        {%  endif %}
     </div>
     {%  block content %}
-        <h1>Roomer</h1>
-        <ol>
-            <li><h3><a href="{%  url 'college-overview' %}">College allocation</a></h3></li>
-            <li><h3><a href="{% url 'roommate-overview' %}">Roommate management</a></h3></li>
-            <li><h3><a href="{% url 'room-request-overview' %}">Room applications</a></h3></li>
-        </ol>
+        <h1>Next phases</h1>
+        {% if phases %}
+            <ol>
+                {% for phase in phases %}
+                    <li>{{ phase.name }} -- {{ phase.phase }} -- {% if phase.eligible %}ELIGIBLE{% else %}NOT ELIGIBLE{% endif %}</li>
+                {% endfor %}
+            </ol>
+        {% else %}
+        <p>There are no phases coming up.</p>
+        {% endif %}
     {%  endblock %}
 
     {% block footer %}

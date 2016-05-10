@@ -7,7 +7,7 @@ from django.db.models import Max
 from django.conf import settings
 from django.utils import timezone
 
-from .models import Phase, CollegePhase, RoomPhase
+from .models import Phase, RoomPhase
 from roomer.models import UserPreference, Room
 from .forms import  RoomPrefForm
 from .utils import *
@@ -21,7 +21,8 @@ def list_preferences(request):
     prefs = UserPreference.objects.filter(user__in=users).order_by('preference_level')
 
     context = {
-        'preferences': prefs
+        'preferences': prefs,
+        'can_apply': RoomPhase.objects.get_current() is not None
     }
 
     return render(request, 'allocation/overview.html', context=context)

@@ -27,9 +27,7 @@ class RoomPrefForm(forms.Form):
     def clean(self):
         cleaned_data = super(RoomPrefForm, self).clean()
 
-        now = timezone.now()
-        phases = RoomPhase.objects.filter(start__lte=now, end__gt=now).order_by('end')
-        current_phase = phases.first()
+        current_phase = RoomPhase.objects.get_current()
 
         if self.user_session is None:
             raise forms.ValidationError('You must be signed in to submit a room choice.')

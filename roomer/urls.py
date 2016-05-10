@@ -19,8 +19,10 @@ from django.contrib.auth import views as auth_views
 
 from django.views.generic import TemplateView
 
+from .views import home
+
 urlpatterns = [
-    url(r'^$', TemplateView.as_view(template_name="base.html"), name="home"),
+    url(r'^$', home, name="home"),
     url(r'^admin/', admin.site.urls),
 
     # College allocation

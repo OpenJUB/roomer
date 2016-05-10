@@ -4,33 +4,38 @@ import datetime
 
 from utils import get_college_code
 
-OPENJUB_BASE = "https://api.jacobs-cs.club/"
 
-r = requests.get(OPENJUB_BASE + "query/active:true%20status:undergrad?limit=1000")
+def generate_fixture(fixture_file='users.json'):
+    openjub_base = "https://api.jacobs-cs.club/"
 
-resp = r.json()
+    r = requests.get(openjub_base + "query/active:true%20status:undergrad?limit=1000")
 
-user_objs = []
+    resp = r.json()
 
-now = datetime.datetime.now()
+    user_objs = []
 
-for data in resp['data']:
-    # Update or create the user profile
-    new_user = {
-        'model': 'roomer.userprofile',
-        'fields': {
-            'username': data['username'],
-            'first_name': data['firstName'],
-            'last_name': data['lastName'],
-            'email': data['email'],
-            'seniority': now.year - 2000 - int(data['year']) + 3 if data['year'] != '' else 0,
-            'year': int(data['year']) if data['year'] != '' else 0,
-            'major': data['major'],
-            'country': data['country'],
-            'old_college': get_college_code(data['college']),
+    now = datetime.datetime.now()
+
+    for data in resp['data']:
+        # Update or create the user profile
+        new_user = {
+            'model': 'roomer.userprofile',
+            'fields': {
+                'username': data['username'],
+                'first_name': data['firstName'],
+                'last_name': data['lastName'],
+                'email': data['email'],
+                'seniority': now.year - 2000 - int(data['year']) + 3 if data['year'] != '' else 0,
+                'year': int(data['year']) if data['year'] != '' else 0,
+                'major': data['major'],
+                'country': data['country'],
+                'old_college': get_college_code(data['college']),
+            }
         }
-    }
-    user_objs.append(new_user)
+        user_objs.append(new_user)
 
-with open('users.json', 'w') as f:
-    json.dump(user_objs, f)
+    with open(fixture_file, 'w') as f:
+        json.dump(user_objs, f)
+
+if __name__ == '__main__':
+    generate_fixture()

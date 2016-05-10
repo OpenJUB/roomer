@@ -1,6 +1,8 @@
 from django.conf import settings
 from django.db.models import Count
 
+from collegechooser.models import UpdateWindow
+from allocation.models import RoomPhase
 
 from roomer.models import UserProfile
 
@@ -39,3 +41,28 @@ def get_fill_percentages():
     out = {code: (fills[code] / capacity)*100 for code, capacity in settings.COLLEGE_CAPACITIES if fills.get(code, -1) != -1}
 
     return out
+
+def get_next_phases(user=None):
+    phases = []
+
+    for phase in UpdateWindow.objects.get_future_phases():
+        phases.append({
+            'name': 'College Phase',
+            'eligible': True,
+            'phase': phase
+        })
+
+    for phase in RoomPhase.objects.get_future_phases():
+        new_phase = {
+            'name': phase.name,
+            'phase': phase
+        }
+
+        eligible, errors = phase.is_user_eligible(user)
+
+        new_phase['eligible'] = eligible
+        new_phase['errors'] = errors
+
+        phases.append(new_phase)
+
+    return phases
