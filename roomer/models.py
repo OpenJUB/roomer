@@ -78,6 +78,10 @@ class UserProfile(AbstractUser):
             :returns Truthy if request sent, Falsy if request not valid. Return codes declared in this class
         """
 
+        # Once you have a room, you can't change roommates
+        if self.can_change_roommates():
+            return self.REQUEST_INVALID
+
         # You can't room with yourself
         if self == other:
             return self.REQUEST_INVALID
@@ -94,6 +98,9 @@ class UserProfile(AbstractUser):
             return self.REQUEST_MUTUAL
 
     def remove_roommate(self, other):
+        if not self.can_change_roommates():
+            return False
+
         if other not in self.roommates.all():
             return False
         else:
@@ -148,6 +155,9 @@ class UserProfile(AbstractUser):
         if not ignore_roommates:
             for mate in self.roommates.all():
                 mate.save(ignore_roommates=True)
+
+    def can_change_roommates(self):
+        return self.allocated_room is None
 
     def save(self, ignore_roommates=False, **kwargs):
 
@@ -282,6 +292,10 @@ class RoommateRequest(models.Model):
         unique_together = ('sender', 'receiver')
 
     def accept(self):
+        if not self.receiver.can_change_roommates():
+            self.delete()
+            return
+
         # Add ourselves to their roommates
         self.receiver.roommates.add(self.sender)
 
