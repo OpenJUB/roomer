@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'collegechooser',
     'roommates',
     'roomer',
+    'allocation'
 ]
 
 MIDDLEWARE_CLASSES = [

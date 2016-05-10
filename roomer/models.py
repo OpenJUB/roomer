@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.db import models
-from django.db.models import Sum
+from django.db.models import Max
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator, ValidationError
 from .utils import get_college_code
@@ -36,7 +36,46 @@ class IntegerRangeField(models.IntegerField):
 class UserPreference(models.Model):
     preference_level = IntegerRangeField(min_value=1, max_value=7)
     user = models.ForeignKey("UserProfile")
-    room = models.ForeignKey("Room")
+    room = models.ForeignKey("Room", related_name='applicants')
+
+    def get_related_preferences(self):
+        users = list(self.user.roommates.all()) + [self.user]
+        return UserPreference.objects.filter(user__in=users)
+
+    def get_lowest_preference(self):
+        lowest = self.get_related_preferences().aggregate(Max('preference_level'))
+        return lowest.get('preference_level__max', 1)
+
+    def move_up(self):
+        if self.preference_level == 1:
+            return
+
+        above = self.get_related_preferences()\
+            .filter(preference_level__lt=self.preference_level)\
+            .order_by('-preference_level').first()
+
+        above.preference_level += 1
+        above.save()
+
+        self.preference_level -= 1
+        self.save()
+
+    def move_down(self):
+        if self.preference_level == self.get_lowest_preference():
+            return
+
+        below = self.get_related_preferences()\
+            .filter(preference_level__gt=self.preference_level)\
+            .order_by('preference_level').first()
+
+        below.preference_level -= 1
+        below.save()
+
+        self.preference_level += 1
+        self.save()
+
+    def can_edit(self, user):
+        return user == self.user or user in self.user.roommates.all()
 
 
 class UserProfile(AbstractUser):
@@ -52,6 +91,8 @@ class UserProfile(AbstractUser):
     year = models.IntegerField(editable=False)
     major = models.CharField(max_length=128, editable=False)
     country = models.CharField(max_length=64, editable=False)
+
+    is_tall = models.BooleanField(default=False)
     allocated_room = models.OneToOneField("Room", related_name='assigned_user', blank=True, null=True)
     allocation_preferences = models.ManyToManyField("Room", through="UserPreference", blank=True)
 
@@ -175,12 +216,12 @@ class UserProfile(AbstractUser):
             return self.get_username()
 
 
-class RoomManager(models.Model):
+class RoomManager(models.Manager):
     """
     Custom manager for the Room model
     """
     def get_by_college(self, college):
-        return super(RoomManager, self).get_query_set().filter(college=college)
+        return super(RoomManager, self).get_queryset().filter(college=college)
 
 
 class Room(models.Model):
@@ -220,6 +261,12 @@ class Room(models.Model):
         except ValidationError as e:
             if raise_exception:
                 raise e
+
+    def get_tag_list(self):
+        return RoomTag.objects.filter(room=self)
+
+    def has_tag(self, tag):
+        return RoomTag.objects.filter(room=self, tag=tag).exists()
 
     def update_generated_tags(self):
         self.tags.filter(generated=True).delete()

@@ -12,7 +12,8 @@ def overview(request, form=RequestRoommateForm(), mutual_request=False, differen
     context = {
         'form': form,
         'mutual_request': mutual_request,
-        'different_colleges': different_colleges
+        'different_colleges': different_colleges,
+        'can_change_roommates': request.user.can_change_roommates()
     }
 
     return render(request, 'roommates/overview.html', context)

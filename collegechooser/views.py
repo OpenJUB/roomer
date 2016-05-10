@@ -1,4 +1,4 @@
-import datetime
+from django.utils import timezone
 
 from django.views.decorators.http import require_http_methods
 from django.shortcuts import render, redirect
@@ -12,7 +12,7 @@ from .utils import *
 @require_http_methods(['POST', 'GET'])
 @login_required
 def overview(request):
-    now = datetime.datetime.now()
+    now = timezone.now()
     profile = request.user
 
     # Get currently active phase

@@ -14,8 +14,11 @@
     </div>
     {%  block content %}
         <h1>Roomer</h1>
-        <h3><a href="{%  url 'college-overview' %}">College allocation</a></h3>
-        <h3><a href="{% url 'roommate-overview' %}">Roommate management</a></h3>
+        <ol>
+            <li><h3><a href="{%  url 'college-overview' %}">College allocation</a></h3></li>
+            <li><h3><a href="{% url 'roommate-overview' %}">Roommate management</a></h3></li>
+            <li><h3><a href="{% url 'room-request-overview' %}">Room applications</a></h3></li>
+        </ol>
     {%  endblock %}
 </body>
 </html>

@@ -7,7 +7,7 @@
         {% for roommate in profile.roommates.all %}
             <li>
                 {{ roommate.get_full_name }}
-                <a href="{% url 'roommate-remove' roommate.pk %}">Remove</a>
+                {% if can_change_roommates %}<a href="{% url 'roommate-remove' roommate.pk %}">Remove</a>{% endif %}
             </li>
         {% endfor %}
         </ul>
@@ -15,21 +15,22 @@
         <p>You have no friends</p>
     {% endif %}
 
-    <h1>Send a request</h1>
-    {% if mutual_request %}
-        <p><i>Your friend had already added you. You're now roommates.</i></p>
+    {% if can_change_roommates %}
+        <h1>Send a request</h1>
+        {% if mutual_request %}
+            <p><i>Your friend had already added you. You're now roommates.</i></p>
+        {% endif %}
+
+        {% if different_colleges %}
+            <p><i>You are in a different college than your friend.</i></p>
+        {% endif %}
+
+        <form action="{% url 'roommate-invite' %}" method="POST">
+            {% csrf_token %}
+            {{ form }}
+            <input type="submit" value="Send" />
+        </form>
     {% endif %}
-
-    {% if different_colleges %}
-        <p><i>You are in a different college than your friend.</i></p>
-    {% endif %}
-
-    <form action="{% url 'roommate-invite' %}" method="POST">
-        {% csrf_token %}
-        {{ form }}
-        <input type="submit" value="Send" />
-    </form>
-
 
     {% if profile.inbox.all %}
         <h1>Received requests</h1>
