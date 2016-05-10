@@ -34,6 +34,8 @@ class IntegerRangeField(models.IntegerField):
 
 class UserPreference(models.Model):
     preference_level = IntegerRangeField(min_value=1, max_value=7)
+    user = models.ForeignKey("UserProfile")
+    room = models.ForeignKey("Room")
 
 
 class UserProfile(AbstractUser):
