@@ -1,9 +1,6 @@
 from django import forms
 from django.contrib.auth import get_user_model
 
-from roomer.models import UserProfile
-from dal import autocomplete
-
 
 class RequestRoommateForm(forms.Form):
     receiver = forms.CharField()
