@@ -124,12 +124,11 @@ class RoomPhase(Phase):
         if self.is_triple_phase:
             if not room.has_tag(room.TRIPLE_ROOM_TAG):
                 return False, 'Not a triple room.'
-
-        if self.is_single_phase:
+        elif self.is_single_phase:
             if not room.has_tag(room.SINGLE_ROOM_TAG):
                 return False, 'Not a single room.'
-
-        if not room.has_tag(room.DOUBLE_ROOM_TAG):
-            return False, 'Not a double room.'
+        else:
+            if not room.has_tag(room.DOUBLE_ROOM_TAG):
+                return False, 'Not a double room.'
 
         return True, 'All good!'
