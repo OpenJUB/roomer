@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.contrib.auth import views as auth_views
 
 from .views import home
+from .forms import RoomerAuthForm
 
 urlpatterns = [
     url(r'^$', home, name="home"),
@@ -33,6 +34,6 @@ urlpatterns = [
     url(r'^allocation/', include('allocation.urls')),
 
     # Authentication
-    url(r'^login/', auth_views.login, {'template_name': 'auth/login.html'}, name="login"),
+    url(r'^login/', auth_views.login, {'authentication_form': RoomerAuthForm, 'template_name': 'auth/login.html'}, name="login"),
     url(r'^logout/', auth_views.logout, {'template_name': 'auth/logout.html', 'next_page': 'home'}, name="logout"),
 ]

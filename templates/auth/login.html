@@ -1,47 +1,56 @@
 {% extends "base.html" %}
+{% load staticfiles %}
 
-{% block page_title %}Login{% endblock %}
+{% block title %}Login{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/login.css' %}" />
+{% endblock %}
 
 {% block content %}
+    <h1>Sign In</h1>
 
-{% if form.errors %}
-<div class="alert alert-danger" role="alert">
-  <strong>Invalid login.</strong> Your username and password didn't match. Please try again.
-</div>
-{% endif %}
-
-{% if next %}
-    {% if user.is_authenticated %}
-      <div class="alert alert-warning" role="alert">
-        <strong>No rights.</strong> Your account doesn't have access to this page. To proceed,
-        please login with an account that has access.
-      </div>
-    {% else %}
-      <div class="alert alert-info" role="alert">
-        <strong>Login required.</strong> Please login to view this page.
-      </div>
+    {% if form.errors %}
+        <p><strong>Invalid login.</strong> Your username and password didn't match. Please try again.</p>
     {% endif %}
-{% endif %}
 
-<div class="row">
+    <p>
+    {% if next %}
+        {% if user.is_authenticated %}
+            <strong>No rights.</strong> Your account doesn't have access to this page. To proceed, please login with an account that has access.
+        {% else %}
+            <strong>Login required.</strong> Please login to view this page.
+        {% endif %}
+    {% endif %}
+    </p>
+<ul class="flat-list">
+    <li>
+    <div class="login_form">
+        <form class="form-signin" method="post" action="{% url 'django.contrib.auth.views.login' %}">
+            {% csrf_token %}
+            <input name="{{ form.username.html_name }}"
+                   type="text"
+                   id="{{ form.username.id_for_label }}"
+                   placeholder="{{ form.username.label }}"
+                   class="form-field"
+                   value="{{ form.username.value|default_if_none:'' }}"
+                   {% if not form.errors %}autofocus{% endif %}/>
 
-  <div class="col-sm-4">
-    <form class="form-signin" method="post" action="{% url 'django.contrib.auth.views.login' %}">
-      <h2 class="form-signin-heading">Please sign in</h2>
-      {% csrf_token %}
-      <label for="inputEmail" class="sr-only">CampusNet Username</label>
-      <input placeholder="Username" class="form-control" id="id_username" maxlength="254" name="username" type="text">
+            <input name="{{ form.password.html_name }}"
+                   type="password"
+                   id="{{ form.password.id_for_label }}"
+                   placeholder="Password"
+                   class="form-field"
+                   {% if form.errors %}autofocus{% endif %}/>
 
-      <label for="inputPassword" class="sr-only">Password</label>
-      <input placeholder="Password" class="form-control" id="id_password" name="password" type="password">
+            <button hidden type="submit" class="btn-block btn-lg btn btn-primary" value="login">Go</button>
 
-      <button type="submit" class="btn-block btn-lg btn btn-primary" value="login">Login</button>
-
-      <input type="hidden" name="next" value="{{ next }}" />
-        <p>We never store your password, and only use it to authenticate you with OpenJUB.</p>
-    </form>
-  </div>
-</div> <!-- row -->
+            <input type="hidden" name="next" value="{{ next }}" />
+            <p>We never store your password, and only use it to authenticate you with OpenJUB.</p>
+        </form>
+    </div>
+    </li>
+</ul>
 
 <p class="text-muted">If you lost your password, reset it in <a class="text-muted" href="https://campusnet.jacobs-university.de">CampusNet</a>.</p>
 
