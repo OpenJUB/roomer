@@ -13,10 +13,8 @@ body {
 
 #main_nav {
     margin: 0;
-    padding: 0.5em 0.5em 0.5em 0;
-
+    padding: 0.5em 0 0.5em 0;
     font-size: 10pt;
-
     background: black;
     color: white;
 }
@@ -32,8 +30,16 @@ body {
     display: inherit;
 }
 
+#main_nav ul li:first-child {
+    padding-left: 1em;
+}
+
 #main_nav ul li.right {
    float: right;
+}
+
+#main_nav ul li.right:last-child {
+    padding-right: 0;
 }
 
 #main_nav a {
