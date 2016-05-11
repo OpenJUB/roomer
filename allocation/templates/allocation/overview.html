@@ -11,19 +11,21 @@
                     <a href="{% url 'room-request-remove' pref.pk %}">Remove</a>
                 </li>
             {% endfor %}
+            {% if can_apply %}
+                <li class="text-muted" style="list-style: none;">(<a href="{% url 'room-request-send' %}">add</a>)</li>
+            {% endif %}
         </ol>
         <p>
-            {% if can_apply %}
-                <a href="{% url 'room-request-send' %}">Add another</a>
-            {% endif %}
         </p>
     {% else %}
-        <p>
+        <ul class="flat-list">
+            <li>
             You have not applied to any rooms.
             {% if can_apply %}
-                <a href="{% url 'room-request-send' %}">Apply now!</a>
+                <span class="text-muted">(<a href="{% url 'room-request-send' %}">apply</a>)</span>
             {% endif %}
-        </p>
+            </li>
+        </ul>
     {% endif %}
 
 {%  endblock %}
