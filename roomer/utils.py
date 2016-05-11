@@ -1,7 +1,14 @@
 import functools
+
+from babel.dates import format_timedelta
 from django.conf import settings
+from django.utils import timezone
+
+from allocation.models import RoomPhase
+from collegechooser.models import UpdateWindow
 
 from .models import UserProfile
+
 
 def get_college_code(college_str):
     for college in settings.COLLEGE_CHOICES:
@@ -9,15 +16,17 @@ def get_college_code(college_str):
             return college[0]
     return ''
 
+
 def get_ordinal(number):
     """
     http://codegolf.stackexchange.com/questions/4707/outputting-ordinal-numbers-1st-2nd-3rd#answer-4712
     """
     return "{0}{1}".format(number,"tsnrhtdd"[(number/10%10!=1)*(number%10<4)*number%10::4])
 
+
 def get_points_breakdown(user_profile):
-    if user_profile is None:
-        return {}
+    if user_profile is None or not user_profile.is_authenticated():
+        return {'available': False}
 
     u = user_profile
     ret = []
@@ -72,7 +81,7 @@ def get_points_breakdown(user_profile):
     for entry in ret:
         sum += entry['points']
 
-    return {'parts': ret, 'sum': sum}
+    return {'parts': ret, 'sum': sum, 'available': True}
 
 
 def tail_call(tuple_return=False):
@@ -108,3 +117,36 @@ def tail_call(tuple_return=False):
             return _optimize_partial
 
     return __wrapper
+
+
+def convert_close_time(end_time):
+    delta = end_time - timezone.now()
+    return format_timedelta(delta, add_direction=True)
+
+
+def get_next_phases(user=None):
+    phases = []
+
+    for phase in UpdateWindow.objects.get_future_phases():
+        phases.append({
+            'name': 'College Phase',
+            'relative_close_time': convert_close_time(phase.end),
+            'phase': phase,
+            'eligible': True,
+        })
+
+    for phase in RoomPhase.objects.get_future_phases():
+        new_phase = {
+            'name': phase.name,
+            'relative_close_time': convert_close_time(phase.end),
+            'phase': phase,
+        }
+
+        eligible, errors = phase.is_user_eligible(user)
+
+        new_phase['eligible'] = eligible
+        new_phase['errors'] = errors
+
+        phases.append(new_phase)
+
+    return phases
