@@ -1,9 +1,13 @@
+{% load staticfiles %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Roomer</title>
     <link rel="stylesheet" type="text/css" href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+    {% block head %}
+    {% endblock %}
 </head>
 <body>
     <div>

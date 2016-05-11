@@ -57,6 +57,10 @@ MIDDLEWARE_CLASSES = [
 ROOT_URLCONF = 'roomer.urls'
 LOGIN_REDIRECT_URL = "home"
 
+STATICFILES_DIRS= [
+    os.path.join(BASE_DIR, "static")
+]
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
