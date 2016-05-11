@@ -49,15 +49,17 @@
         {% else %}
             <p>There are no phases coming up.</p>
         {% endif %}
-        <h2>Points Breakdown</h2>
-        <div class="breakdown">
-            <ul class="flat-list">
-                {% for part in points.parts %}
-                    <li><span class="float-left">{{ part.points|stringformat:".1f" }}</span> | <span class="float-right">{{ part.text }}</span></li>
-                {% endfor %}
-                <li class="breakdown-sum"> = {{ points.sum }} point{{ points.sum|pluralize }}</li>
-            </ul>
-        </div>
+        {% if points.available %}
+            <h2>Points Breakdown</h2>
+            <div class="breakdown">
+                <ul class="flat-list">
+                    {% for part in points.parts %}
+                        <li><span class="float-left">{{ part.points|stringformat:".1f" }}</span> | <span class="float-right">{{ part.text }}</span></li>
+                    {% endfor %}
+                    <li class="breakdown-sum"> = {{ points.sum }} point{{ points.sum|pluralize }}</li>
+                </ul>
+            </div>
+        {% endif %}
     {%  endblock %}
 </div>
 
