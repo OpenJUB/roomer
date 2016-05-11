@@ -109,6 +109,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Only send emails to console
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_HOST = 'exchange.jacobs-university.de'
 
 
 

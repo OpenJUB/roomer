@@ -8,6 +8,8 @@ from django.http import JsonResponse
 from roomer.models import RoommateRequest, UserProfile
 from .forms import RequestRoommateForm
 
+from notify.utils import InboxNotification
+
 
 @login_required
 def overview(request, form=RequestRoommateForm(), mutual_request=False, different_colleges=False):
@@ -25,7 +27,8 @@ def overview(request, form=RequestRoommateForm(), mutual_request=False, differen
 @login_required
 def deny(request, request_id):
     req = get_object_or_404(RoommateRequest, pk=request_id)
-    req.delete()
+    if req.receiver == request.user:
+        req.delete()
 
     return redirect('roommate-overview')
 
@@ -34,7 +37,8 @@ def deny(request, request_id):
 @login_required
 def accept(request, request_id):
     req = get_object_or_404(RoommateRequest, pk=request_id)
-    req.accept()
+    if req.receiver == request.user:
+        req.accept()
 
     return redirect('roommate-overview')
 
@@ -46,7 +50,7 @@ def invite(request):
 
     if form.is_valid():
         other = UserProfile.objects.get(username=form.cleaned_data['receiver'])
-        code = request.user.send_roommate_request(other)
+        code, new_request = request.user.send_roommate_request(other)
 
         if code != UserProfile.REQUEST_SENT:
             return overview(
@@ -54,6 +58,7 @@ def invite(request):
                 mutual_request=(code == UserProfile.REQUEST_MUTUAL),
                 different_colleges=(code == UserProfile.REQUEST_INVALID))
         else:
+            InboxNotification(new_request).send()
             return overview(request)
 
     return overview(request, form=form)

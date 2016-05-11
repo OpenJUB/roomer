@@ -124,22 +124,22 @@ class UserProfile(AbstractUser):
 
         # Once you have a room, you can't change roommates
         if not self.can_change_roommates():
-            return self.REQUEST_INVALID
+            return self.REQUEST_INVALID, None
 
         # You can't room with yourself
         if self == other:
-            return self.REQUEST_INVALID
+            return self.REQUEST_INVALID, None
 
         if self.college != other.college:
-            return self.REQUEST_INVALID
+            return self.REQUEST_INVALID, None
 
         req, _ = RoommateRequest.objects.get_or_create(sender=self, receiver=other)
 
         if not req.check_mutual():
             req.save()
-            return self.REQUEST_SENT
+            return self.REQUEST_SENT, req
         else:
-            return self.REQUEST_MUTUAL
+            return self.REQUEST_MUTUAL, None
 
     def remove_roommate(self, other):
         if not self.can_change_roommates():

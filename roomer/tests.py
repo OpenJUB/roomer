@@ -1,5 +1,5 @@
 from django.test import TestCase
-from roomer.models import UserProfile
+from roomer.models import UserProfile, RoommateRequest
 
 
 class UserProfileTestCase(TestCase):
@@ -52,9 +52,13 @@ class UserProfileTestCase(TestCase):
         a = UserProfile.objects.get(username='a')
         b = UserProfile.objects.get(username='b')
 
-        code = a.send_roommate_request(b)
+        code, new_request = a.send_roommate_request(b)
 
         self.assertEqual(UserProfile.REQUEST_SENT, code)
+        self.assertIsInstance(new_request, RoommateRequest)
+
+        self.assertEqual(new_request.sender, a)
+        self.assertEqual(new_request.receiver, b)
 
         b.inbox.first().accept()
 
