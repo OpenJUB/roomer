@@ -20,7 +20,6 @@
         <li class="right">
             <ul>
                 {% if user.is_authenticated %}
-                    <li>Hi {{ user.first_name }}!</li>
                     {% if user.is_staff %}
                         <li><a href="{% url 'admin:index' %}">Django Admin</a></li>
                     {% endif %}
@@ -37,16 +36,28 @@
 
 <div id="main_content">
     {%  block content %}
-        <h1>Next Phases</h1>
+        <h1>Hi {{ user.first_name }}!</h1>
+        <h2>Next Phases</h2>
         {% if phases %}
             <ol>
                 {% for phase in phases %}
-                    <li>{{ phase.name }} -- {{ phase.phase }} -- {% if phase.eligible %}ELIGIBLE{% else %}NOT ELIGIBLE{% endif %}</li>
+                    <li {% if not phase.eligible %}class="text-muted"{% endif %}>
+                        {{ phase.name }} ({% if phase.eligible %}closes {{ phase.relative_close_time }}{% else %}not eligible{% endif %})
+                    </li>
                 {% endfor %}
             </ol>
         {% else %}
             <p>There are no phases coming up.</p>
         {% endif %}
+        <h2>Points Breakdown</h2>
+        <div class="breakdown">
+            <ul class="flat-list">
+                {% for part in points.parts %}
+                    <li><span class="float-left">{{ part.points|stringformat:".1f" }}</span> | <span class="float-right">{{ part.text }}</span></li>
+                {% endfor %}
+                <li class="breakdown-sum"> = {{ points.sum }} point{{ points.sum|pluralize }}</li>
+            </ul>
+        </div>
     {%  endblock %}
 </div>
 
