@@ -2,7 +2,7 @@
 {% block content %}
     <h1>Room Applications</h1>
     {% if preferences %}
-        <ol>
+        <ol class="flat-list">
             {% for pref in preferences %}
                 <li>
                     {{ pref.room.code }}
@@ -12,7 +12,7 @@
                 </li>
             {% endfor %}
             {% if can_apply %}
-                <li class="text-muted" style="list-style: none;">(<a href="{% url 'room-request-send' %}">add</a>)</li>
+                <li class="text-muted" style="list-style: none;">(<a href="{% url 'room-request-send' %}">add another</a>)</li>
             {% endif %}
         </ol>
         <p>

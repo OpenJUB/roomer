@@ -75,12 +75,16 @@ a:hover {
     color: gray;
 }
 
-.flat-list {
+ul.flat-list {
     padding-left: 40px;
     list-style: none;
 }
 
-ul.flat-list li {
+ol.flat-list {
+    padding-left: 40px;
+}
+
+.flat-list li {
     padding-bottom: 0.5em;
 }
 
