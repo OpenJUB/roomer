@@ -83,6 +83,10 @@ class RoomPhase(Phase):
             error.append('You are not a user. WTF.')
             return False, error
 
+        if not user.is_authenticated():
+            error.append('You are not logged in. WTF.')
+            return False, error
+
         # Check user generally eligible
         if user.year >= now.year and not user.is_whitelisted:
             error.append('You are a third year student and therefore not eligible for this round.')

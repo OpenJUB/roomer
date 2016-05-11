@@ -1,60 +1,47 @@
 {% extends 'base.html' %}
 {% block content %}
+<h1>Roommates</h1>
 {% with request.user as profile %}
-    <h1>Your roommates</h1>
-    {% if profile.roommates.all %}
-        <ul>
+    {{ form.non_field_errors }}
+    {{ form.receiver.errors }}
+
+    {% if mutual_request %}
+        <p><i>Your friend had already added you. You're now roommates.</i></p>
+    {% endif %}
+
+    {% if different_colleges %}
+        <p><i>You are in a different college than your friend.</i></p>
+    {% endif %}
+
+    <ul id="room_inbox" class="flat-list">
+        {% for request in profile.inbox.all %}
+            <li class="text-muted">
+                {{ request.sender.get_full_name }}
+                (<a class="text-muted" href="{% url 'request-accept' request.pk %}">accept</a>
+                <a class="text-muted" href="{% url 'request-deny' request.pk %}">deny</a>)
+            </li>
+        {% endfor %}
         {% for roommate in profile.roommates.all %}
             <li>
                 {{ roommate.get_full_name }}
-                {% if can_change_roommates %}<a href="{% url 'roommate-remove' roommate.pk %}">Remove</a>{% endif %}
+                {% if can_change_roommates %}(<a href="{% url 'roommate-remove' roommate.pk %}">remove</a>){% endif %}
             </li>
         {% endfor %}
-        </ul>
-    {% else %}
-        <p>You have no friends</p>
-    {% endif %}
-
-    {% if can_change_roommates %}
-        <h1>Send a request</h1>
-        {% if mutual_request %}
-            <p><i>Your friend had already added you. You're now roommates.</i></p>
-        {% endif %}
-
-        {% if different_colleges %}
-            <p><i>You are in a different college than your friend.</i></p>
-        {% endif %}
-
-        <form action="{% url 'roommate-invite' %}" method="POST">
-            {% csrf_token %}
-            {{ form }}
-            <input type="submit" value="Send" />
-        </form>
-    {% endif %}
-
-    {% if profile.inbox.all %}
-        <h1>Received requests</h1>
-        <ul>
-        {% for request in profile.inbox.all %}
-            <li>
-                {{ request.sender.get_full_name }}
-                <a href="{% url 'request-accept' request.pk %}">Accept</a>
-                <a href="{% url 'request-deny' request.pk %}">Deny</a>
-            </li>
-        {% endfor %}
-        </ul>
-    {% endif %}
-
-
-    {% if profile.outbox.all %}
-        <h1>Pending requests</h1>
-        <ul>
         {% for request in profile.outbox.all %}
-            <li>{{ request.receiver.get_full_name }}</li>
+            <li class="text-muted">
+                {{ request.receiver.get_full_name }} (pending)
+            </li>
         {% endfor %}
-        </ul>
-    {% endif %}
-
+        {% if can_change_roommates %}
+        <li class="text-muted">
+            <form action="/roommates/request/send" method="POST" id="send_request_form">
+            {% csrf_token %}
+            <input id="id_receiver" name="receiver" type="text" placeholder="send a request">
+            (<a href="#" onclick="document.getElementById('send_request_form').submit()">send</a>)
+        </form>
+        </li>
+        {% endif %}
+    </ul>
 
 {% endwith %}
 {% endblock %}

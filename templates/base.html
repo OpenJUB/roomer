@@ -10,23 +10,34 @@
     {% endblock %}
 </head>
 <body>
-    <div>
-        <a href="{% url 'home' %}">Home</a>
-        | <a href="{% url 'college-overview' %}">College Allocation</a>
-        | <a href="{% url 'roommate-overview' %}">Roommate Requests</a>
-        | <a href="{% url 'room-request-overview' %}">Room Applications</a>
+    <nav id="main_nav">
+        <ul>
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li><a href="{% url 'college-overview' %}">Colleges</a></li>
+            <li><a href="{% url 'roommate-overview' %}">Roommates</a></li>
+            <li><a href="{% url 'room-request-overview' %}">Rooms</a></li>
 
-        {% if user.is_authenticated %}
-            {% if user.is_staff %}
-            | <span><a href="{% url 'admin:index' %}">Django Admin</a></span>
-            {% endif %}
-            | <span>Logged in as {{ user.get_full_name }} ({{ user.points }} points) <a href="{%  url 'logout' %}">Log out</a></span>
-        {% else %}
-            | <a href="{%  url 'login' %}">Log in</a>
-        {%  endif %}
-    </div>
+            {% if user.is_authenticated %}
+                <li class="right">
+                    <ul>
+                        <li>Hi {{ user.first_name }}!</li>
+                        {% if user.is_staff %}
+                            <li><a href="{% url 'admin:index' %}">Django Admin</a></li>
+                        {% endif %}
+                        <li><a href="{% url 'logout' %}">Log Out</a></li>
+                    </ul>
+                </li>
+            {% else %}
+                <li class="right">
+                    <a href="{%  url 'login' %}">Log in</a>
+                </li>
+            {%  endif %}
+        </ul>
+    </nav>
+
+    <div id="main_content">
     {%  block content %}
-        <h1>Next phases</h1>
+        <h1>Next Phases</h1>
         {% if phases %}
             <ol>
                 {% for phase in phases %}
@@ -37,10 +48,13 @@
         <p>There are no phases coming up.</p>
         {% endif %}
     {%  endblock %}
+    </div>
 
+    <footer id="main_footer" class="text-muted">
     {% block footer %}
-    <footer>For problems, please contact <a href="mailto:housing@ju-u.sg?subject=Roomer%20Issue">housing@ju-u.sg</a></footer>
+        For problems, please contact <a href="mailto:housing@ju-u.sg?subject=Roomer%20Issue">housing@ju-u.sg</a></footer>
     {% endblock %}
+    </footer>
 
     {% block scripts %}
         <script type="text/javascript" src="https://code.jquery.com/jquery-2.2.3.min.js"></script>
