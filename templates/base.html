@@ -42,7 +42,7 @@
             <ol>
                 {% for phase in phases %}
                     <li {% if not phase.eligible %}class="text-muted"{% endif %}>
-                        {{ phase.name }} ({% if phase.eligible %}closes {{ phase.relative_close_time }}{% else %}not eligible{% endif %})
+                        {{ phase.name }} ({% if phase.eligible %}{{ phase.relative_time }}{% else %}not eligible{% endif %})
                     </li>
                 {% endfor %}
             </ol>

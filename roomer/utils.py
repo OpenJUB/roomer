@@ -119,9 +119,22 @@ def tail_call(tuple_return=False):
     return __wrapper
 
 
-def convert_close_time(end_time):
-    delta = end_time - timezone.now()
-    return format_timedelta(delta, add_direction=True)
+def convert_phase_time(phase):
+    now = timezone.now()
+    prefix = ''
+
+    if phase.is_open():
+        delta = phase.end - now
+        prefix = 'ends'
+    else:
+        if phase.end < now:
+            prefix = 'ended'
+        else:
+            prefix = 'opens'
+
+        delta = phase.start - now
+
+    return prefix + ' ' + format_timedelta(delta, add_direction=True, locale='en')
 
 
 def get_next_phases(user=None):
@@ -130,15 +143,15 @@ def get_next_phases(user=None):
     for phase in UpdateWindow.objects.get_future_phases():
         phases.append({
             'name': 'College Phase',
-            'relative_close_time': convert_close_time(phase.end),
+            'relative_time': convert_phase_time(phase),
             'phase': phase,
             'eligible': True,
         })
 
-    for phase in RoomPhase.objects.get_future_phases():
+    for phase in RoomPhase.objects.order_by('-end'):
         new_phase = {
             'name': phase.name,
-            'relative_close_time': convert_close_time(phase.end),
+            'relative_time': convert_phase_time(phase),
             'phase': phase,
         }
 
