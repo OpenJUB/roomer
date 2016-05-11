@@ -3,7 +3,6 @@ from django.db import models
 from django.db.models import Max
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator, ValidationError
-from .utils import get_college_code
 from .regions import regions
 
 from decimal import Decimal

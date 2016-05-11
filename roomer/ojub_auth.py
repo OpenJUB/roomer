@@ -1,7 +1,6 @@
 from django.contrib.auth import get_user_model
 
-from roomer.models import UserProfile
-from roomer.models import get_college_code
+from roomer.utils import get_college_code
 
 import requests
 import datetime
