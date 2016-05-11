@@ -10,32 +10,32 @@
     {% endblock %}
 </head>
 <body>
-    <nav id="main_nav">
-        <ul>
-            <li><a href="{% url 'home' %}">Home</a></li>
-            <li><a href="{% url 'college-overview' %}">Colleges</a></li>
-            <li><a href="{% url 'roommate-overview' %}">Roommates</a></li>
-            <li><a href="{% url 'room-request-overview' %}">Rooms</a></li>
+<nav id="main_nav">
+    <ul>
+        <li><a href="{% url 'home' %}">Home</a></li>
+        <li><a href="{% url 'college-overview' %}">Colleges</a></li>
+        <li><a href="{% url 'roommate-overview' %}">Roommates</a></li>
+        <li><a href="{% url 'room-request-overview' %}">Rooms</a></li>
 
-            {% if user.is_authenticated %}
-                <li class="right">
-                    <ul>
-                        <li>Hi {{ user.first_name }}!</li>
-                        {% if user.is_staff %}
-                            <li><a href="{% url 'admin:index' %}">Django Admin</a></li>
-                        {% endif %}
-                        <li><a href="{% url 'logout' %}">Log Out</a></li>
-                    </ul>
-                </li>
-            {% else %}
-                <li class="right">
-                    <a href="{%  url 'login' %}">Log in</a>
-                </li>
-            {%  endif %}
-        </ul>
-    </nav>
+        <li class="right">
+            <ul>
+                {% if user.is_authenticated %}
+                    <li>Hi {{ user.first_name }}!</li>
+                    {% if user.is_staff %}
+                        <li><a href="{% url 'admin:index' %}">Django Admin</a></li>
+                    {% endif %}
+                    <li><a href="{% url 'logout' %}">Log Out</a></li>
+                {% else %}
+                    <li>
+                        <a href="{%  url 'login' %}">Log in</a>
+                    </li>
+                {%  endif %}
+            </ul>
+        </li>
+    </ul>
+</nav>
 
-    <div id="main_content">
+<div id="main_content">
     {%  block content %}
         <h1>Next Phases</h1>
         {% if phases %}
@@ -45,20 +45,20 @@
                 {% endfor %}
             </ol>
         {% else %}
-        <p>There are no phases coming up.</p>
+            <p>There are no phases coming up.</p>
         {% endif %}
     {%  endblock %}
-    </div>
+</div>
 
-    <footer id="main_footer" class="text-muted">
+<footer id="main_footer" class="text-muted">
     {% block footer %}
         For problems, please contact <a href="mailto:housing@ju-u.sg?subject=Roomer%20Issue">housing@ju-u.sg</a></footer>
     {% endblock %}
-    </footer>
+</footer>
 
-    {% block scripts %}
-        <script type="text/javascript" src="https://code.jquery.com/jquery-2.2.3.min.js"></script>
-        <script type="text/javascript" src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
-    {% endblock %}
+{% block scripts %}
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.2.3.min.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+{% endblock %}
 </body>
 </html>
