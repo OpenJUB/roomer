@@ -1,7 +1,7 @@
 {% extends 'notify/base.txt' %}
 
 {% block content %}
-{{ request.sender.first_name }} has sent you a roommate request.
+{{ request.sender.first_name }} wants to room with you.
 
 Please respond with one of the following:
 

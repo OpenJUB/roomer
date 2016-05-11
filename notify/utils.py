@@ -10,7 +10,7 @@ from django.template.loader import render_to_string
 from django.conf import settings
 
 class Notification(object):
-    sender_address = "housing@ju-u.sg"
+    sender_address = "USG Housing <housing@ju-u.sg>"
     mail_title = "Empty"
 
     txt_template = "notify/base.txt"
