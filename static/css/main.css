@@ -76,18 +76,33 @@ a:hover {
 }
 
 .flat-list {
+    padding-left: 40px;
     list-style: none;
 }
 
-#id_receiver {
+ul.flat-list li {
+    padding-bottom: 0.5em;
+}
+
+.form-field {
     border: none;
-    border-bottom: 1px solid gray;
+    border-bottom: 1px dashed lightgray;
     font-size: 10pt;
     color: gray;
+
     padding: 0;
+    margin-bottom: 1em;
 }
 
 #main_content li a:hover {
     color: black;
     text-decoration: inherit;
+}
+
+button {
+    padding: 0.3em 1em;
+    border: 1px solid black;
+    background: white;
+    color: black;
+    font-weight: bold;
 }
