@@ -58,3 +58,20 @@
 
 {% endwith %}
 {% endblock %}
+
+{% block scripts %}
+    {{ block.super }}
+
+    <script type="text/javascript">
+        $(function() {
+            $('#id_receiver').autocomplete({
+                source: function(request, response) {
+                    $.getJSON('{% url 'user-autocomplete' %}',{q: request.term}, function(data) {
+                        response(data)
+                    })
+                }
+            })
+        })
+
+    </script>
+{% endblock %}

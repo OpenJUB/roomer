@@ -1,7 +1,9 @@
+import json
+
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.http import require_GET, require_POST
 from django.contrib.auth.decorators import login_required
-
+from django.http import JsonResponse
 
 from roomer.models import RoommateRequest, UserProfile
 from .forms import RequestRoommateForm
@@ -64,3 +66,16 @@ def remove(request, roommate_id):
     request.user.remove_roommate(mate)
 
     return redirect('roommate-overview')
+
+
+@require_GET
+@login_required
+def autocomplete(request):
+    qs = UserProfile.objects.filter(college=request.user.college)
+
+    if 'q' in request.GET:
+        qs = qs.filter(username__icontains=request.GET['q'])
+
+    values = qs.values_list('username', flat=True)
+
+    return JsonResponse(list(values), safe=False)
