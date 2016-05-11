@@ -107,6 +107,14 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+# Only send emails to console
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+
+
+# Used for generating full URL in email templates
+EMAIL_DOMAIN = 'http://roomer.jacobs.university'
+
 # Custom User model
 AUTH_USER_MODEL = "roomer.UserProfile"
 

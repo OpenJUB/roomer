@@ -1,0 +1,10 @@
+Dear {{ user.first_name }},
+
+{% block content %}
+
+{% endblock %}
+
+
+Sincerely,
+
+USG Housing

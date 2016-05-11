@@ -1,0 +1,11 @@
+{% extends 'notify/base.txt' %}
+
+{% block content %}
+{{ request.sender.first_name }} has sent you a roommate request.
+
+Please respond with one of the following:
+
+Accept: {{ domain }}{% url 'request-accept' request.pk %}
+Deny: {{ domain }}{% url 'request-deny' request.pk %}
+
+{% endblock %}

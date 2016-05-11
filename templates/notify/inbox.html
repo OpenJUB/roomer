@@ -1,0 +1,13 @@
+{% extends 'notify/base.html' %}
+
+{% block title %}New roommate request{% endblock %}
+
+
+{% block content %}
+<p>{{ request.sender.first_name }} has sent you a roommate request.</p>
+
+<p>Please respond with one of the following:</p>
+
+<p><a href="{{ domain }}{% url 'request-accept' request.pk %}">Accept</a></p>
+<p><a href="{{ domain }}{% url 'request-deny' request.pk %}">Deny</a></p>
+{% endblock %}
