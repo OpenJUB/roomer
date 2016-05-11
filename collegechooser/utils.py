@@ -35,7 +35,7 @@ def get_college_fills():
 def get_fill_percentages():
     fills = get_college_fills()
 
-    out = {code: (fills[code] / capacity)*100 for code, capacity in settings.COLLEGE_CAPACITIES if fills.get(code, -1) != -1}
+    out = {code: (float(fills[code]*100) / capacity) for code, capacity in settings.COLLEGE_CAPACITIES if fills.get(code, -1) != -1}
 
     return out
 
