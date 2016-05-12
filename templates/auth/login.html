@@ -9,20 +9,6 @@
 
 {% block content %}
     <h1>Sign In</h1>
-
-    {% if form.errors %}
-        <p><strong>Invalid login.</strong> Your username and password didn't match. Please try again.</p>
-    {% endif %}
-
-    <p>
-    {% if next %}
-        {% if user.is_authenticated %}
-            <strong>No rights.</strong> Your account doesn't have access to this page. To proceed, please login with an account that has access.
-        {% else %}
-            <strong>Login required.</strong> Please login to view this page.
-        {% endif %}
-    {% endif %}
-    </p>
 <ul class="flat-list">
     <li>
     <div class="login_form">
@@ -39,18 +25,32 @@
             <input name="{{ form.password.html_name }}"
                    type="password"
                    id="{{ form.password.id_for_label }}"
-                   placeholder="Password"
+                   placeholder="password"
                    class="form-field"
                    onkeydown="if (event.keyCode == 13) { this.form.submit(); return false; }"
                    {% if form.errors %}autofocus{% endif %}/>
 
-            <button hidden type="submit" value="login">Go</button>
+            <button type="submit" value="login">log in</button>
 
             <input type="hidden" name="next" value="{{ next }}" />
-            <p>We never store your password, and only use it to authenticate you with OpenJUB.</p>
-            <p class="text-muted">If you lost your password, reset it in <a class="text-muted" href="https://campusnet.jacobs-university.de">CampusNet</a>.</p>
         </form>
     </div>
+    </li>
+    <li></li> <!-- double spacing -->
+    {% if next %}
+        <li>
+        {% if user.is_authenticated %}
+            <strong>No rights.</strong> Your account doesn't have access to this page. To proceed, please login with an account that has access.
+        {% else %}
+            <strong>Login required.</strong> Please login to view this page.
+        {% endif %}
+        </li>
+    {% endif %}
+    {% if form.errors %}
+        <li><strong>Invalid login.</strong> Your username and password didn't match. Please try again.</li>
+    {% endif %}
+    <li>
+        <p class="text-muted">If you lost your password, reset it in <a class="text-muted" href="https://campusnet.jacobs-university.de">CampusNet</a>.</p>
     </li>
 </ul>
 

@@ -129,10 +129,12 @@ ol.flat-list {
 
 button {
     padding: 0.3em 1em;
-    border: 1px solid black;
-    background: white;
+    border: none;
+    background: none;
     color: black;
     font-weight: bold;
+    font-size: 100%;
+    cursor: pointer;
 }
 
 .breakdown-sum {
