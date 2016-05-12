@@ -54,25 +54,22 @@ def get_cost_matrix(matrix):
 
 def get_hungarian():
     allocations = []
-    users = UserPreference.objects.all()
+    users = UserPreference.objects.values("user_id").distinct()
     rooms = Room.objects.filter(assigned_user=None)
-    import pdb; pdb.set_trace()
     matrix = []
     for idx, user in enumerate(users):
-        matrix[idx] = []
-        prefs = UserPreference.objects.filter(user=user.username)
+        prefs = UserPreference.objects.filter(user=user["user_id"])
         pref_matrix = []
         for index, room in enumerate(rooms):
-            pref_matrix[index] = 999
+            pref_matrix.append(999)
             for pref in prefs:
-                if room == pref.room:
+                if room.id == pref.room_id:
                     pref_matrix[index] = pref.preference_level
-        matrix[idx] = pref_matrix
+        matrix.append(pref_matrix)
 
     hungarian = get_cost_matrix(matrix)
     for idx, user in enumerate(users):
         allocations.append({"user": user, "preference": hungarian[idx]})
-
     return allocations
 
 

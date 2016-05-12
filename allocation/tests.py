@@ -151,4 +151,6 @@ class TestHungarian(TestCase):
 
     def test_hungarian_on_users(self):
         allocations = get_hungarian()
-        self.assertEqual(get_dict_from_key_in_list("user", "sshukla", allocations)["preference"], self.pref_b.preference_level)
+        self.assertEqual(
+            get_dict_from_key_in_list("user", {"user_id": UserProfile.objects.get(username="b").id}, allocations)[
+                "preference"], self.pref_b.preference_level)
