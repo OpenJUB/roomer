@@ -11,7 +11,7 @@ class UserProfileAdmin(admin.ModelAdmin):
     readonly_fields = ('points', 'year', 'major', 'country', 'old_college', 'seniority')
     model = UserProfile
 
-    list_filter = ('college', 'old_college')
+    list_filter = ('college', 'old_college', 'major', 'year')
 
     inlines = [
         PreferenceInline

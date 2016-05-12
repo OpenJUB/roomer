@@ -7,3 +7,6 @@ munkres==1.0.7
 
 # For relative / natural datetimes
 babel==2.3.4
+
+# For PostgreSQL
+psycopg2==2.6.1
