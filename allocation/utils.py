@@ -73,3 +73,9 @@ def get_hungarian():
         allocations.append({"user": user, "preference": hungarian[idx]})
 
     return allocations
+
+
+def get_dict_from_key_in_list(k, v, l):
+    for d in l:
+        if k in d and d[k] == v:
+            return d
