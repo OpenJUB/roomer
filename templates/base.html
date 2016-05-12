@@ -36,18 +36,25 @@
 
 <div id="main_content">
     {%  block content %}
-        <h1>Hi {{ user.first_name }}!</h1>
-        <h2>Next Phases</h2>
+        {% if user.is_authenticated %}
+            <h1>Hi {{ user.first_name }}!</h1>
+        {% else %}
+            <h1>Hey there!</h1>
+            <ul class="flat-list">
+                <li>We hope you're having a great day!</li>
+                <li>(<a href="{% url 'login' %}">log in</a>) to get started.</li>
+            </ul>
+        {% endif %}
         {% if phases %}
+            <h2>Next Phases</h2>
             <ol>
                 {% for phase in phases %}
                     <li {% if not phase.eligible %}class="text-muted"{% endif %}>
-                        {{ phase.name }} ({% if phase.eligible %}{{ phase.relative_time }}{% else %}not eligible{% endif %})
+                        {{ phase.name }}
+                        ({% if phase.eligible %}{{ phase.relative_time }}{% elif not user.is_authenticated %}log in to check{% else %}not eligible{% endif %})
                     </li>
                 {% endfor %}
             </ol>
-        {% else %}
-            <p>There are no phases coming up.</p>
         {% endif %}
         {% if points.available %}
             <h2>Points Breakdown</h2>
