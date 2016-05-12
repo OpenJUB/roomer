@@ -54,8 +54,9 @@ def get_cost_matrix(matrix):
 
 def get_hungarian():
     allocations = []
-    users = UserPreference.objects.values("user").distinct()
+    users = UserPreference.objects.all()
     rooms = Room.objects.filter(assigned_user=None)
+    import pdb; pdb.set_trace()
     matrix = []
     for idx, user in enumerate(users):
         matrix[idx] = []

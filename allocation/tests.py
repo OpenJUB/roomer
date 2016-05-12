@@ -58,46 +58,46 @@ class TestHungarian(TestCase):
         user_b = UserProfile.objects.get(username='b')
         user_c = UserProfile.objects.get(username='c')
         user_d = UserProfile.objects.get(username='d')
-        user_a.send_roommate_request(user_b)
-        user_b.inbox.first().accept()
+        # user_a.send_roommate_request(user_b)
+        # user_b.inbox.first().accept()
 
-        Room.objects.create(
-            college='ME',
-            floor=3,
-            block='A',
-            code='MA-302'
-        )
-        Room.objects.create(
+        room_a, _ = Room.objects.get_or_create(
             college='ME',
             floor=3,
             block='A',
             code='MA-303'
         )
-        Room.objects.create(
+        room_a.save()
+        room_b, _ = Room.objects.get_or_create(
+            college='ME',
+            floor=2,
+            block='A',
+            code='MA-203'
+        )
+        room_b.save()
+        room_c, _ = Room.objects.get_or_create(
+            college='NM',
+            floor=3,
+            block='B',
+            code='NB-351'
+        )
+        room_c.save()
+        room_d, _ = Room.objects.get_or_create(
             college='ME',
             floor=3,
             block='C',
             code='MC-104'
         )
-        Room.objects.create(
+        room_d.save()
+        room_e, _ = Room.objects.get_or_create(
             college='NM',
             floor=3,
             block='B',
-            code='NB-351'
+            code='NA-350'
         )
-        Room.objects.create(
-            college='NM',
-            floor=3,
-            block='B',
-            code='NB-351'
-        )
+        room_e.save()
 
-        room_a = Room.objects.get(code='MA-302')
-        room_b = Room.objects.get(code='MA-303')
-        room_c = Room.objects.get(code='NB-351')
-        room_d = Room.objects.get(code='MC-104')
-        room_e = Room.objects.get(code='NB-350')
-        room_a.associated.add(room_b)
+        # room_a.associated.add(room_b)
 
         UserPreference.objects.create(
             preference_level=1,
@@ -105,7 +105,7 @@ class TestHungarian(TestCase):
             room=room_b
         )
         UserPreference.objects.create(
-            preference_level=1,
+            preference_level=2,
             user=user_a,
             room=room_d
         )
@@ -125,7 +125,7 @@ class TestHungarian(TestCase):
             room=room_d
         )
         UserPreference.objects.create(
-            preference_level=1,
+            preference_level=2,
             user=user_c,
             room=room_a
         )
@@ -135,7 +135,7 @@ class TestHungarian(TestCase):
             room=room_c
         )
         UserPreference.objects.create(
-            preference_level=1,
+            preference_level=2,
             user=user_d,
             room=room_e
         )
