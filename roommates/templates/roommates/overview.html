@@ -16,20 +16,20 @@
     <ul id="room_inbox" class="flat-list">
         {% for request in profile.inbox.all %}
             <li class="text-muted">
-                {{ request.sender.get_full_name }}
+                {{ request.sender.first_name }}
                 (<a class="text-muted" href="{% url 'request-accept' request.pk %}">accept</a>
                 <a class="text-muted" href="{% url 'request-deny' request.pk %}">deny</a>)
             </li>
         {% endfor %}
         {% for roommate in profile.roommates.all %}
             <li>
-                {{ roommate.get_full_name }}
+                {{ roommate.first_name }}
                 {% if can_change_roommates %}(<a href="{% url 'roommate-remove' roommate.pk %}">remove</a>){% endif %}
             </li>
         {% endfor %}
         {% for request in profile.outbox.all %}
             <li class="text-muted">
-                {{ request.receiver.get_full_name }} (pending)
+                {{ request.receiver.first_name }} (pending)
             </li>
         {% endfor %}
         {% if can_change_roommates %}
