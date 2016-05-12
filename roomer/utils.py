@@ -140,7 +140,7 @@ def convert_phase_time(phase):
 def get_next_phases(user=None):
     phases = []
 
-    for phase in UpdateWindow.objects.get_future_phases():
+    for phase in UpdateWindow.objects.get_future_phases().order_by('end'):
         phases.append({
             'name': 'College Phase',
             'relative_time': convert_phase_time(phase),
@@ -148,7 +148,7 @@ def get_next_phases(user=None):
             'eligible': True,
         })
 
-    for phase in RoomPhase.objects.order_by('end'):
+    for phase in RoomPhase.objects.get_future_phases().order_by('end'):
         new_phase = {
             'name': phase.name,
             'relative_time': convert_phase_time(phase),
