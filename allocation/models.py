@@ -31,14 +31,7 @@ class Phase(models.Model):
             return False
 
     def __str__(self):
-        if self.is_open():
-            return "Open until " + str(self.end)
-        else:
-            now = timezone.make_aware(datetime.now(), timezone.get_current_timezone())
-            if now < self.start:
-                return "Starts on " + str(self.start) + " and Ends on " + str(self.end)
-            else:
-                return "Ended on " + str(self.end)
+        return self.name
 
 
 class RoomPhaseManager(models.Manager):
@@ -99,7 +92,7 @@ class RoomPhase(Phase):
         # Check user eligible for tall room phase
         if self.is_tall_phase and not user.is_tall:
             error.append('A tall room phase is currently active. However, you are not tall. '
-                         'If you believe that you are tall, send your username to housing@ju-u.sg')
+                         'If you believe that you are tall, send your username and proof of height to housing@ju-u.sg')
 
         if self.is_single_phase:
             required_count = 0
