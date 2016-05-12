@@ -1,5 +1,30 @@
+@font-face {
+    font-family: 'Courier';
+    src: url(/static/fonts/Courier.ttf);
+    font-weight: normal;
+}
+
+@font-face {
+    font-family: 'Courier';
+    src: url(/static/fonts/Courier-Bold.ttf);
+    font-weight: bold;
+}
+
+@font-face {
+    font-family: 'Courier';
+    src: url(/static/fonts/Courier-Oblique.ttf);
+    font-style: oblique;
+}
+
+@font-face {
+    font-family: 'Courier';
+    src: url(/static/fonts/Courier-BoldOblique.ttf);
+    font-style: oblique;
+    font-weight: bold;
+}
+
 * {
-    font-family: monospace;
+    font-family: 'Courier', monospace;
 }
 
 body {
@@ -91,9 +116,8 @@ ol.flat-list {
 .form-field {
     border: none;
     border-bottom: 1px dashed lightgray;
-    font-size: 10pt;
+    font-size: 100%;
     color: gray;
-
     padding: 0;
     margin-bottom: 1em;
 }

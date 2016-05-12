@@ -36,7 +36,7 @@
         <li class="text-muted">
             <form action="/roommates/request/send" method="POST" id="send_request_form">
             {% csrf_token %}
-            <input class="form-field" id="{{ form.receiver.id_for_label }}" name="{{ form.receiver.html_name }}" type="text" placeholder="send a request">
+            <input class="form-field" id="{{ form.receiver.id_for_label }}" name="{{ form.receiver.html_name }}" type="text" placeholder="Username">
             (<a href="#" onclick="document.getElementById('send_request_form').submit()">send</a>)
         </form>
         </li>

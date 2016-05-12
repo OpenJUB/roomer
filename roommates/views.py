@@ -4,6 +4,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.http import require_GET, require_POST
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from django.db.models import Q
 
 from roomer.models import RoommateRequest, UserProfile
 from .forms import RequestRoommateForm
@@ -79,7 +80,8 @@ def autocomplete(request):
     qs = UserProfile.objects.filter(college=request.user.college)
 
     if 'q' in request.GET:
-        qs = qs.filter(username__icontains=request.GET['q'])
+        q = request.GET['q']
+        qs = qs.filter(Q(username__icontains=q) | Q(email__icontains=q) | Q(first_name__icontains=q))
 
     values = qs.values_list('username', flat=True)
 
