@@ -148,7 +148,7 @@ def get_next_phases(user=None):
             'eligible': True,
         })
 
-    for phase in RoomPhase.objects.order_by('-end'):
+    for phase in RoomPhase.objects.order_by('end'):
         new_phase = {
             'name': phase.name,
             'relative_time': convert_phase_time(phase),
