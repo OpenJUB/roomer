@@ -116,9 +116,8 @@ ol.flat-list {
 .form-field {
     border: none;
     border-bottom: 1px dashed lightgray;
-    font-size: 10pt;
+    font-size: 100%;
     color: gray;
-
     padding: 0;
     margin-bottom: 1em;
 }
