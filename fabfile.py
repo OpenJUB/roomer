@@ -12,6 +12,9 @@ def update():
 
     run('pip install -r requirements.txt')
 
-    run('manage_prod.py makemigrations roomer collegechoosre allocation')
-    run('manage_prod.py migrate')
-    run('manage_prod.py collectstatic --no-input')
+    run('python manage_prod.py makemigrations roomer collegechoosre allocation')
+    run('python manage_prod.py migrate')
+    run('python manage_prod.py collectstatic --no-input')
+
+    run('supervisorctl reread')
+    run('supervisorctl update')
