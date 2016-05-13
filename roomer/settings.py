@@ -115,6 +115,12 @@ AUTH_PASSWORD_VALIDATORS = [
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_HOST = 'exchange.jacobs-university.de'
 
+# For admin notifications
+SERVER_EMAIL = 'system@roomer.jacobs.university'
+ADMINS = [
+        ('Leonhard', 'l.kuboschek@jacobs-university.de'),
+        ('Sid', 's.shukla@jacobs-university.de')
+]
 
 
 # Used for generating full URL in email templates

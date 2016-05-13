@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>404</h1>
+<h2>That's an error.</h2>
+<ul class="flat-list">
+    <li><strong>{{ request_path|default:'This page' }}</strong> was not found.</li>
+    <li>If you expected to see something here, don't worry:</li>
+    <li>Responsible humans have been notified of this issue.</li>
+</ul>
+
+{% endblock %}
+
+{% block footer %}
+Please don't send us emails for these errors. We get them already.
+{% endblock %}
