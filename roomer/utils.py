@@ -52,6 +52,12 @@ def get_points_breakdown(user_profile):
                         .format(user.first_name, user.extra_points, 's' if user.extra_points > 1 else ''),
                 'points': user.extra_points
             })
+        elif user.extra_points < 0:
+            ret.append({
+                'text': ' fairness adjustment{2}'
+                        .format(user.first_name, user.extra_points, 's' if user.extra_points < -1 else ''),
+                'points': user.extra_points
+            })
 
     # Add major, country, region points
     countries = set([val.country for val in users])
