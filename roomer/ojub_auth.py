@@ -1,6 +1,4 @@
 from django.contrib.auth import get_user_model
-from django.views.decorators.debug import sensitive_post_parameters
-
 from roomer.utils import get_college_code
 
 import requests
@@ -18,7 +16,6 @@ class OjubBackend(object):
     This class does not fill in user profiles, this has to be handled
     in other places
     """
-    @sensitive_post_parameters('password')
     def authenticate(self, username=None, password=None):
         r = requests.post(OPENJUB_BASE + "auth/signin",
                           data={'username': username, 'password': password})
