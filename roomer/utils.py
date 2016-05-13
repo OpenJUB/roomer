@@ -36,7 +36,7 @@ def get_points_breakdown(user_profile):
     # Add user points
     for user in users:
         ret.append({
-            'text': '{0}: {1} year'.format(user.first_name, get_ordinal(user.seniority)),
+            'text': u'{0}: {1} year'.format(user.first_name, get_ordinal(user.seniority)),
             'points': user.seniority
         })
 
@@ -49,7 +49,7 @@ def get_points_breakdown(user_profile):
         if user.extra_points > 0:
             ret.append({
                 'text': ' + extra point{2}'
-                    .format(user.first_name, user.extra_points, 's' if user.extra_points > 1 else ''),
+                        .format(user.first_name, user.extra_points, 's' if user.extra_points > 1 else ''),
                 'points': user.extra_points
             })
 
