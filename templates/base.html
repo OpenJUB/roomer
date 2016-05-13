@@ -45,6 +45,15 @@
                 <li>(<a href="{% url 'login' %}">log in</a>) to get started.</li>
             </ul>
         {% endif %}
+
+
+        {% if user.allocated_room %}
+            <h2>Allocated Room</h2>
+            <ul class="flat-list">
+                <li>{{ user.first_name }}: {{ user.allocated_room }}</li>
+            </ul>
+        {% endif %}
+
         {% if phases %}
             <h2>All Phases</h2>
             <ol>
@@ -56,7 +65,8 @@
                 {% endfor %}
             </ol>
         {% endif %}
-        {% if points.available %}
+
+        {% if user.can_change_roommates and points.available %}
             <h2>Points Breakdown</h2>
             <div class="breakdown">
                 <ul class="flat-list">
