@@ -110,6 +110,9 @@ class RoomPhase(Phase):
         return not len(error) > 0, error
 
     def is_allocating_room(self, room):
+        if room.has_tag(room.DISABLED_ROOM_TAG):
+            return False, 'Room is disabled.'
+
         if self.is_tall_phase:
             if not room.has_tag(room.TALL_ROOM_TAG):
                 return False, 'Not a tall room.'
