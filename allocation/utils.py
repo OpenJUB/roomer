@@ -55,7 +55,12 @@ def get_cost_matrix(matrix):
 def get_hungarian():
     allocations = []
     users = UserPreference.objects.values("user_id").distinct()
-    rooms = Room.objects.filter(assigned_user=None)
+    unassigned_rooms = Room.objects.filter(assigned_user=None)
+    rooms = []
+    for room in unassigned_rooms:
+        if not room.has_tag('disabled'):
+            rooms.append(room)
+
     matrix = []
     for idx, user in enumerate(users):
         prefs = UserPreference.objects.filter(user=user["user_id"])
@@ -86,3 +91,6 @@ def disable_floor(college, floor):
     rooms_to_disable = Room.objects.filter(college=college, floor=floor)
     for room in rooms_to_disable:
         room.add_tag('disabled')
+
+
+
