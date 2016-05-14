@@ -77,3 +77,12 @@ def get_dict_from_key_in_list(k, v, l):
     for d in l:
         if k in d and d[k] == v:
             return d
+
+
+def disable_floor(college, floor):
+    college_list = settings.COLLEGE_CODES
+    if college not in college_list:
+        raise Exception("Unidentified College")
+    rooms_to_disable = Room.objects.filter(college=college, floor=floor)
+    for room in rooms_to_disable:
+        room.add_tag('disabled')
