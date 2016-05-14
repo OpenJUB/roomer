@@ -110,7 +110,13 @@ class RoomPhase(Phase):
         return not len(error) > 0, error
 
     def is_allocating_room(self, room):
-        if room.assigned_user is not None:
+        room_taken = False
+        try:
+            room_taken = room.assigned_user is not None
+        except UserProfile.DoesNotExist:
+            pass
+
+        if room_taken:
             return False, 'This room is already allocated.'
 
         if room.has_tag(room.DISABLED_ROOM_TAG):

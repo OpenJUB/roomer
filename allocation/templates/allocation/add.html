@@ -3,7 +3,8 @@
 <h1>Apply for a room</h1>
     <form action="{% url 'room-request-send' %}" method="post">
     {% csrf_token %}
-    {{ form.as_p }}
+    <input class="form-field" id="{{ form.room_code.id_for_label }}" name="{{ form.room_code.html_name }}" type="text" placeholder="room code">
+    (<a href="#" onclick="document.getElementById('send_request_form').submit()">add</a>)
     <input type="submit" value="Send" />
     </form>
 {% endblock %}

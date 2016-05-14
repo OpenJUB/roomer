@@ -5,20 +5,10 @@ from allocation.models import RoomPhase
 from roomer.models import Room, College
 
 
-class RoomField(forms.ChoiceField):
-    def __init__(self, college, *args, **kwargs):
-        if 'choices' in kwargs:
-            del kwargs['choices']
-
-        super(RoomField, self).__init__(*args,
-                                        choices=((room.code, room.code) for room in Room.rooms.get_by_college(college)),
-                                        **kwargs)
-
-
 class RoomPrefForm(forms.Form):
     def __init__(self, *args, **kwargs):
         self.user_session = kwargs.pop('user', None)
-        self.room_code = RoomField(self.user_session.college, label="Room choice:")
+        self.room_code = forms.CharField(label="Room choice:")
 
         super(RoomPrefForm, self).__init__(*args, **kwargs)
 
