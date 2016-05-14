@@ -39,6 +39,11 @@ class OjubBackend(object):
         user_model = get_user_model()
         now = datetime.datetime.now()
 
+        try:
+            year = int(data['year'])
+        except ValueError:
+            year = now.year
+
         # Update or create the user profile
         user, created = user_model.objects.update_or_create(
             username=uname,
@@ -47,7 +52,7 @@ class OjubBackend(object):
                 'first_name': data['firstName'],
                 'last_name': data['lastName'],
                 'email': data['email'],
-                'seniority': now.year - 2000 - int(data['year']) + 3,
+                'seniority': now.year - 2000 - year + 3,
                 'year': int(data['year']),
                 'major': data['major'],
                 'country': data['country'],
