@@ -16,6 +16,14 @@ def unmake_tall(modeladmin, request, queryset):
 unmake_tall.short_description = "Remove tall flag from selected users"
 
 
+def disable_room(modeladmin, request, queryset):
+    for room in queryset:
+        room.add_tag(Room.DISABLED_ROOM_TAG)
+        room.save()
+
+
+disable_room.short_description = "Disable all selected rooms"
+
 class PreferenceInline(admin.TabularInline):
     model = UserProfile.allocation_preferences.through
 
@@ -44,6 +52,12 @@ class TagInline(admin.TabularInline):
 
 
 class RoomAdmin(admin.ModelAdmin):
+    search_fields = ['code']
+
+    list_filter = ('college', 'block', 'floor')
+    list_display = ('code', 'assigned_user')
+    actions = [disable_room]
+
     inlines = [TagInline]
 
 
