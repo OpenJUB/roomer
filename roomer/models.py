@@ -77,6 +77,9 @@ class UserPreference(models.Model):
     def can_edit(self, user):
         return user == self.user or user in self.user.roommates.all()
 
+    def __str__(self):
+        return self.user.first_name + " wants " + self.room.code + " [" + str(self.preference_level) + "]"
+
 
 class UserProfile(AbstractUser):
     REQUEST_INVALID = 0
