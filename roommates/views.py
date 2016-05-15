@@ -70,10 +70,7 @@ def invite(request):
 @require_GET
 @login_required
 def invite_freshman(request):
-    has_freshie = request.user.roommates.filter(username=settings.FRESHIE_USERNAME).exists()
-
-    if not has_freshie:
-        request.user.roommates.add(make_freshie(request.user.username))
+    request.user.roommates.add(make_freshie(request.user.username))
 
     return redirect('roommate-overview')
 
