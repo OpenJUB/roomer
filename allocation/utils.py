@@ -5,6 +5,10 @@ from munkres import Munkres, print_matrix
 from roomer.models import UserProfile, UserPreference, Room
 
 
+def frange(a,b,s):
+    return [] if s > 0 and a > b or s < 0 and a < b or s==0 else [a]+frange(a+s,b,s)
+
+
 def get_college_capacity(college_code):
     for code, capacity in settings.COLLEGE_CAPACITIES:
         if college_code == code:
@@ -52,7 +56,34 @@ def get_cost_matrix(matrix):
     return values
 
 
-def get_hungarian():
+def allocate(allocations):
+    for allocation in allocations:
+        try:
+            user = UserProfile.objects.get(id=allocation["user"]["user_id"])
+            user_pref = UserPreference.objects.get(user=user.id, preference_level=allocation["preference"])
+            user.allocated_room = user_pref.room
+            user.save()
+        except:
+            raise Exception("Allocation fucked up! Blame Eurovision #AustraliaFor2017")
+
+
+def get_allocations_for_unallocated_users(point_limit):
+    for pt in frange(15, point_limit, -0.5):
+        users = UserProfile.objects.filter(allocated_room=None, points__gte=pt)
+        user_prefs = []
+        for user in users:
+            user_prefs.append({"user_id": user.username})
+        try:
+            allocations = run_hungarian(user_prefs)
+        except:
+            raise Exception("Hungarian failure")
+        try:
+            allocate(allocations)
+        except:
+            raise Exception("Allocation failure")
+
+
+def run_hungarian(users):
     allocations = []
     users = UserPreference.objects.values("user_id").distinct()
     unassigned_rooms = Room.objects.filter(assigned_user=None)

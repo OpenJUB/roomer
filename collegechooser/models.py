@@ -7,10 +7,12 @@ from datetime import datetime
 
 # Create your models here.
 
+
 class UpdateWindowManager(models.Manager):
     def get_future_phases(self):
         now = timezone.now()
         return super(UpdateWindowManager, self).get_queryset().filter(end__gte=now)
+
 
 class UpdateWindow(models.Model):
     start = models.DateTimeField()
