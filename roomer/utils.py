@@ -31,7 +31,7 @@ def get_points_breakdown(user_profile):
     u = user_profile
     ret = []
 
-    users = [u] + list(u.roommates.all())
+    users = [u] + list(u.roommates.exclude(username__endswith='-'+u.username))
 
     # Add user points
     for user in users:
@@ -169,3 +169,31 @@ def get_next_phases(user=None):
         phases.append(new_phase)
 
     return phases
+
+
+def make_freshie(username):
+    now = timezone.now()
+
+    fresh_face = UserProfile.objects.filter(username__endswith='-'+username).last()
+
+    if fresh_face is not None:
+        counter = int(fresh_face.username.split('-')[1]) + 1
+    else:
+        counter = 1
+
+    freshie = UserProfile.objects.create(
+        year=now.year,
+        seniority=0,
+        country='Freshland',
+        major='Applied Procrastination',
+        first_name='Freshie',
+        last_name='McFreshface',
+        old_college='Home',
+        is_active=False,
+        username="{0}-{1}-{2}".format(settings.FRESHIE_USERNAME, str(counter), username)
+    )
+
+    freshie.set_unusable_password()
+    freshie.save()
+
+    return freshie

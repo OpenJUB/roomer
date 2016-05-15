@@ -174,3 +174,6 @@ COLLEGE_CAPACITIES = [
 
 # Maximum filling of the college, in percent
 MAX_COLLEGE_FILL = 75
+
+# Used for generating freshie accounts
+FRESHIE_USERNAME = 'ffreshface'

@@ -179,7 +179,8 @@ class UserProfile(AbstractUser):
             :arg ignore_roommates Don't update this users' roommates. Defaults to False
         """
 
-        roommates = list(self.roommates.all())
+        # Exclude freshies from points calculation
+        roommates = list(self.roommates.exclude(username__endswith='-'+self.username))
         roommates.append(self)
 
         countries = set([val.country for val in roommates])

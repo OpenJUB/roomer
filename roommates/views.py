@@ -1,12 +1,14 @@
-import json
+import random
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.http import require_GET, require_POST
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.db.models import Q
+from django.conf import settings
 
 from roomer.models import RoommateRequest, UserProfile
+from roomer.utils import make_freshie
 from .forms import RequestRoommateForm
 
 from notify.utils import InboxNotification
@@ -18,7 +20,8 @@ def overview(request, form=RequestRoommateForm(), mutual_request=False, differen
         'form': form,
         'mutual_request': mutual_request,
         'different_colleges': different_colleges,
-        'can_change_roommates': request.user.can_change_roommates()
+        'can_change_roommates': request.user.can_change_roommates(),
+        'freshman_invite': random.choice(["freshie", "freshman please", "I want a freshie"])
     }
 
     return render(request, 'roommates/overview.html', context)
@@ -64,12 +67,25 @@ def invite(request):
 
     return overview(request, form=form)
 
+@require_GET
+@login_required
+def invite_freshman(request):
+    has_freshie = request.user.roommates.filter(username=settings.FRESHIE_USERNAME).exists()
+
+    if not has_freshie:
+        request.user.roommates.add(make_freshie(request.user.username))
+
+    return redirect('roommate-overview')
 
 @require_GET
 @login_required
 def remove(request, roommate_id):
     mate = get_object_or_404(UserProfile, pk=roommate_id)
+
     request.user.remove_roommate(mate)
+
+    if mate.username.startswith(settings.FRESHIE_USERNAME):
+        mate.delete()
 
     return redirect('roommate-overview')
 
