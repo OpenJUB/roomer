@@ -24,6 +24,16 @@ def disable_room(modeladmin, request, queryset):
 
 disable_room.short_description = "Disable all selected rooms"
 
+
+def make_room_quiet(modeladmin, request, queryset):
+    for room in queryset:
+        room.add_tag(Room.QUIET_ROOM_TAG)
+        room.save()
+
+
+make_room_quiet.short_description = "Mark all selected rooms as quiet rooms"
+
+
 class PreferenceInline(admin.TabularInline):
     model = UserProfile.allocation_preferences.through
 
@@ -56,7 +66,7 @@ class RoomAdmin(admin.ModelAdmin):
 
     list_filter = ('college', 'block', 'floor')
     list_display = ('code', 'assigned_user')
-    actions = [disable_room]
+    actions = [disable_room, make_room_quiet]
 
     inlines = [TagInline]
 

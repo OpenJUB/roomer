@@ -52,6 +52,7 @@ class RoomPhase(Phase):
     Allocation, Triple Apartment Allocation, and Point based Allocations.)
     """
     is_tall_phase = models.BooleanField(default=False)
+    is_quiet_phase = models.BooleanField(default=False)
     is_single_phase = models.BooleanField(default=False)  # For Psychos
     is_triple_phase = models.BooleanField(default=False)  # Apparently triple rooms need their own phase
     points_limit = models.FloatField(default=0, blank=True)  # Setting points. Default 0 to allow everybody
@@ -125,6 +126,10 @@ class RoomPhase(Phase):
         if self.is_tall_phase:
             if not room.has_tag(room.TALL_ROOM_TAG):
                 return False, 'Not a tall room.'
+
+        if self.is_quiet_phase:
+            if not room.has_tag(room.QUIET_ROOM_TAG):
+                return False, 'Not a quiet room.'
 
         if self.is_triple_phase:
             if not room.has_tag(room.TRIPLE_ROOM_TAG):
