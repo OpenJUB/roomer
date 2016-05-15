@@ -171,29 +171,27 @@ def get_next_phases(user=None):
     return phases
 
 
+def remove_freshie(username):
+    UserProfile.objects.filter(username__endswith="-"+username).delete()
+
+def has_freshie(username):
+    return UserProfile.objects.filter(username__endswith='-'+username).exists()
+
+
 def make_freshie(username):
     now = timezone.now()
 
-    fresh_face = UserProfile.objects.filter(username__endswith='-'+username).last()
-
-    if fresh_face is not None:
-        counter = int(fresh_face.username.split('-')[1]) + 1
-    else:
-        counter = 1
-
-    freshie = UserProfile.objects.create(
-        year=now.year,
+    fresh, created = UserProfile.objects.get_or_create(
+        year=now.year + 3,
         seniority=0,
-        country='Freshland',
-        major='Applied Procrastination',
         first_name='Freshie',
         last_name='McFreshface',
-        old_college='Home',
         is_active=False,
-        username="{0}-{1}-{2}".format(settings.FRESHIE_USERNAME, str(counter), username)
+        username="{0}-{1}".format(settings.FRESHIE_USERNAME, username)
     )
 
-    freshie.set_unusable_password()
-    freshie.save()
+    if created:
+        fresh.set_unusable_password()
+        fresh.save()
 
-    return freshie
+    return fresh

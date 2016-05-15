@@ -8,7 +8,7 @@ from django.db.models import Q
 from django.conf import settings
 
 from roomer.models import RoommateRequest, UserProfile
-from roomer.utils import make_freshie
+from roomer.utils import make_freshie, has_freshie
 from .forms import RequestRoommateForm
 
 from notify.utils import InboxNotification
@@ -21,6 +21,7 @@ def overview(request, form=RequestRoommateForm(), mutual_request=False, differen
         'mutual_request': mutual_request,
         'different_colleges': different_colleges,
         'can_change_roommates': request.user.can_change_roommates(),
+        'can_add_freshman': not has_freshie(request.user.username),
         'freshman_invite': random.choice(["freshie", "freshman please", "I want a freshie"])
     }
 
@@ -83,7 +84,7 @@ def remove(request, roommate_id):
 
     request.user.remove_roommate(mate)
 
-    if mate.username.startswith(settings.FRESHIE_USERNAME):
+    if mate.username == settings.FRESHIE_USERNAME + '-' + request.user.username:
         mate.delete()
 
     return redirect('roommate-overview')
