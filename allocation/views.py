@@ -1,6 +1,7 @@
 import datetime
 
-from django.views.decorators.http import require_http_methods
+from django.views.decorators.http import require_http_methods, require_GET
+from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.db.models import Max
@@ -20,9 +21,29 @@ def list_preferences(request):
 
     prefs = UserPreference.objects.filter(user__in=users).order_by('preference_level')
 
+    if request.method == 'POST':
+        form = RoomPrefForm(request.POST, user=request.user)
+
+        if form.is_valid():
+            room = Room.objects.get(code=form.cleaned_data.get('room_code'))
+            lowest_request = UserPreference.objects.filter(user=request.user).order_by('-preference_level').first()
+
+            if not lowest_request:
+                lowest_pref = 1
+            else:
+                lowest_pref = lowest_request.preference_level + 1
+
+            UserPreference.objects.create(user=request.user, room=room, preference_level=lowest_pref)
+
+            return redirect('room-request-overview')
+    else:
+        form = RoomPrefForm(None, user=request.user)
+
+
     context = {
         'preferences': prefs,
-        'can_apply': RoomPhase.objects.get_current() is not None
+        'can_apply': RoomPhase.objects.get_current() is not None,
+        'form': form
     }
 
     return render(request, 'allocation/overview.html', context=context)
@@ -54,24 +75,35 @@ def remove_preference(request, pref_id):
 
     return redirect('room-request-overview')
 
+@require_GET
 @login_required
-def apply_for_room(request):
-    if request.method == 'POST':
-        form = RoomPrefForm(request.POST, user=request.user)
+def room_code_autocomplete(request):
+    current_phase = RoomPhase.objects.get_current()
 
-        if form.is_valid():
-            room = Room.objects.get(code=form.cleaned_data.get('room_code'))
-            lowest_request = UserPreference.objects.filter(user=request.user).order_by('-preference_level').first()
+    # Return no rooms when there is no allocation being done
+    if current_phase is None or request.user.is_anonymous():
+        return JsonResponse([], safe=False)
 
-            if not lowest_request:
-                lowest_pref = 1
-            else:
-                lowest_pref = lowest_request.preference_level + 1
+    # Get all free rooms (for perf reasons)
+    qs = Room.objects.filter(assigned_user__isnull=True, college=request.user.college).order_by('code')
 
-            UserPreference.objects.create(user=request.user, room=room, preference_level=lowest_pref)
+    # Filter by room code if given
+    if 'q' in request.GET:
+        qs = qs.filter(code__istartswith=request.GET['q'])
 
-            return redirect('room-request-overview')
-    else:
-        form = RoomPrefForm(None, user=request.user)
+    room_result = []
 
-    return render(request, 'allocation/add.html', context={'form': form})
+    # Filter rooms that are not being allocated
+    for room in qs:
+        avail, reason = current_phase.is_allocating_room(room)
+
+        room_result.append({
+            'code': room.code,
+            'available': avail,
+            'reason': reason
+        })
+
+    # Sort by availability
+    rooms = sorted(room_result, key=lambda r: r['available'], reverse=True)
+
+    return JsonResponse(rooms[:10], safe=False)

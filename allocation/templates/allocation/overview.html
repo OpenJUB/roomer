@@ -1,31 +1,69 @@
 {%  extends "base.html" %}
 {% block content %}
     <h1>Room Applications</h1>
-    {% if preferences %}
-        <ol class="flat-list">
-            {% for pref in preferences %}
-                <li>
-                    {{ pref.room.code }}
-                    <a href="{% url 'room-request-up' pref.pk %}">Up</a>
-                    <a href="{% url 'room-request-down' pref.pk %}">Down</a>
-                    <a href="{% url 'room-request-remove' pref.pk %}">Remove</a>
-                </li>
-            {% endfor %}
-            {% if can_apply %}
-                <li class="text-muted" style="list-style: none;">(<a href="{% url 'room-request-send' %}">add another</a>)</li>
-            {% endif %}
-        </ol>
-        <p>
-        </p>
-    {% else %}
-        <ul class="flat-list">
+    {{ form.all.errors }}
+    <ol class="flat-list">
+        {% for pref in preferences %}
             <li>
-            You have not applied to any rooms.
-            {% if can_apply %}
-                <span class="text-muted">(<a href="{% url 'room-request-send' %}">apply</a>)</span>
-            {% endif %}
+                {{ pref.room.code }}
+                <a href="{% url 'room-request-up' pref.pk %}">Up</a>
+                <a href="{% url 'room-request-down' pref.pk %}">Down</a>
+                <a href="{% url 'room-request-remove' pref.pk %}">Remove</a>
             </li>
-        </ul>
-    {% endif %}
+        {% endfor %}
+        {% if can_apply %}
+            <li class="text-muted" style="list-style: none;">
+                <form id="room-request-send" action="{% url 'room-request-overview' %}" method="post">
+                {% csrf_token %}
+                <input autofocus class="form-field" id="{{ form.room_code.id_for_label }}" name="{{ form.room_code.html_name }}" type="text" placeholder="room code">
+                (<a href="#" onclick="document.getElementById('room-request-send').submit()">add</a>)
+                </form>
+            </li>
+        {% endif %}
+    </ol>
 
 {%  endblock %}
+
+{% block scripts %}
+    {{ block.super }}
+
+    <script type="text/javascript">
+        $(function() {
+            $('#id_room_code').autocomplete({
+                source: function(request, response) {
+                    $.getJSON('{% url 'room-code-autocomplete' %}',{q: request.term}, function(data) {
+                        response(data)
+                    })
+                },
+                select: function( event, ui ) {
+                    $('#id_room_code').val(ui.item.code);
+                    $('#room-request-send').submit();
+                    return false;
+                },
+                focus: function( event, ui ) {
+                    if(ui.item.available) {
+                        $('#id_room_code').val(ui.item.code);
+                    } else {
+                        $('#id_room_code').val("not available");
+                    }
+                    return false;
+                },
+                create: function () {
+                    $(this).data('ui-autocomplete')._renderItem = function (ul, item) {
+                        if(item.available) {
+                            return $( "<li></li>" )
+                                .data("item.autocomplete", item)
+                                .append("<span>" + item.code + "</span>")
+                                .appendTo(ul);
+                        } else {
+                            return $('<li>')
+                            .append('<span class="text-muted">' + item.code + ': ' + item.reason + '</span>')
+                            .appendTo(ul);
+                        }
+                    };
+                }
+            })
+        })
+
+    </script>
+{% endblock %}
