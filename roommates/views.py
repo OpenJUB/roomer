@@ -67,12 +67,14 @@ def invite(request):
 
     return overview(request, form=form)
 
+
 @require_GET
 @login_required
 def invite_freshman(request):
     request.user.roommates.add(make_freshie(request.user.username))
 
     return redirect('roommate-overview')
+
 
 @require_GET
 @login_required
