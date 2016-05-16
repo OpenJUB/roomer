@@ -68,15 +68,18 @@ def allocate(allocations):
                 user.allocated_room = user_pref.room
                 user.save()
 
-
                 # Also allocate roommates
                 mate_associations = zip(user.roommates.all(), user_pref.room.associated.all())
 
-                for user, room in mate_associations:
-                    user.allocated_room = room
-                    user.save()
+                for mate, room in mate_associations:
+                    mate.allocated_room = room
+                    mate.save()
 
-                user_pref.delete()
+                    # Clear their preferences
+                    UserPreference.objects.filter(user=mate).delete()
+
+                # Clear their preferences
+                UserPreference.objects.filter(user=user).delete()
 
         except:
             raise Exception("Allocation fucked up! Blame Eurovision #AustraliaFor2017")
