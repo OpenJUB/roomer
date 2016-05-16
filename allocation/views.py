@@ -100,6 +100,7 @@ def room_code_autocomplete(request):
         room_result.append({
             'code': room.code,
             'available': avail,
+            'applicants': max(0, room.applicants.exclude(user=request.user).count()),
             'reason': reason
         })
 

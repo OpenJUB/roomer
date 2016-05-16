@@ -1,21 +1,23 @@
 {%  extends "base.html" %}
 {% block content %}
     <h1>Room Applications</h1>
-    {{ form.all.errors }}
+    {{ form.non_field_errors }}
     <ol class="flat-list">
         {% for pref in preferences %}
-            <li>
-                {{ pref.room.code }}
-                (<a href="{% url 'room-request-up' pref.pk %}">up</a>
-                <a href="{% url 'room-request-down' pref.pk %}">down</a>
-                <a href="{% url 'room-request-remove' pref.pk %}">remove</a>)
-            </li>
+            {% with no_applicants=pref.room.applicants.count %}
+                <li>
+                    {{ pref.room.code }} - {{ no_applicants }} applicant{{ no_applicants|pluralize }}
+                    (<a href="{% url 'room-request-up' pref.pk %}">up</a>
+                    <a href="{% url 'room-request-down' pref.pk %}">down</a>
+                    <a href="{% url 'room-request-remove' pref.pk %}">remove</a>)
+                </li>
+            {% endwith %}
         {% endfor %}
         {% if can_apply %}
             <li class="text-muted" style="list-style: none;">
                 <form id="room-request-send" action="{% url 'room-request-overview' %}" method="post">
                 {% csrf_token %}
-                <input autofocus class="form-field" id="{{ form.room_code.id_for_label }}" name="{{ form.room_code.html_name }}" type="text" placeholder="room code">
+                <input autofocus class="form-field" id="{{ form.room_code.id_for_label }}" name="{{ form.room_code.html_name }}" type="text" placeholder="e.g. KA-123">
                 (<a href="#" onclick="document.getElementById('room-request-send').submit()">add</a>)
                 </form>
             </li>
@@ -51,9 +53,18 @@
                 create: function () {
                     $(this).data('ui-autocomplete')._renderItem = function (ul, item) {
                         if(item.available) {
+                            applicants = "";
+
+                            if(item.applicants > 0) {
+                                if(item.applicants == 1) {
+                                    applicants = ": " + item.applicants + " other"
+                                } else {
+                                    applicants = ": " + item.applicants + " others"
+                                }
+                            }
                             return $( "<li></li>" )
                                 .data("item.autocomplete", item)
-                                .append("<span>" + item.code + "</span>")
+                                .append("<span>" + item.code + applicants + "</span>")
                                 .appendTo(ul);
                         } else {
                             return $('<li>')

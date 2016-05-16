@@ -29,7 +29,7 @@ class UpdateWindow(models.Model):
 
     def can_update_colleges(self, profile):
         if self.is_open():
-            if self.live_allocation:
+            if self.live_allocation and profile.allocated_room is None:
                 return True
             return profile.college == ''
         else:
