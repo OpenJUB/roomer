@@ -6,9 +6,9 @@
         {% for pref in preferences %}
             <li>
                 {{ pref.room.code }}
-                <a href="{% url 'room-request-up' pref.pk %}">Up</a>
-                <a href="{% url 'room-request-down' pref.pk %}">Down</a>
-                <a href="{% url 'room-request-remove' pref.pk %}">Remove</a>
+                (<a href="{% url 'room-request-up' pref.pk %}">up</a>
+                <a href="{% url 'room-request-down' pref.pk %}">down</a>
+                <a href="{% url 'room-request-remove' pref.pk %}">remove</a>)
             </li>
         {% endfor %}
         {% if can_apply %}

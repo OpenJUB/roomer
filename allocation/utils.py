@@ -60,9 +60,24 @@ def allocate(allocations):
     for allocation in allocations:
         try:
             user = UserProfile.objects.get(id=allocation["user"]["user_id"])
-            user_pref = UserPreference.objects.get(user=user.id, preference_level=allocation["preference"])
-            user.allocated_room = user_pref.room
-            user.save()
+
+            if allocation['preference'] < 999:
+                user_pref = UserPreference.objects.get(user=user, preference_level=allocation["preference"])
+                print("User " + user.username + " to room " + user_pref.room.code)
+
+                user.allocated_room = user_pref.room
+                user.save()
+
+
+                # Also allocate roommates
+                mate_associations = zip(user.roommates.all(), user_pref.room.associated.all())
+
+                for user, room in mate_associations:
+                    user.allocated_room = room
+                    user.save()
+
+                user_pref.delete()
+
         except:
             raise Exception("Allocation fucked up! Blame Eurovision #AustraliaFor2017")
 
@@ -70,9 +85,17 @@ def allocate(allocations):
 def get_allocations_for_unallocated_users(point_limit):
     for pt in frange(15, point_limit, -0.5):
         users = UserProfile.objects.filter(allocated_room=None, points__gte=pt)
+
+        user_ids = []
         user_prefs = []
         for user in users:
-            user_prefs.append({"user_id": user.username})
+            if user.id not in user_ids:
+                user_prefs.append({"user_id": user.id})
+                user_ids.append(user.id)
+
+        if users.count() > 0:
+            print("Allocating {0} users with {1} or more points".format(users.count(), pt))
+
         try:
             allocations = run_hungarian(user_prefs)
         except:
@@ -82,10 +105,16 @@ def get_allocations_for_unallocated_users(point_limit):
         except:
             raise Exception("Allocation failure")
 
+x = get_allocations_for_unallocated_users
+
 
 def run_hungarian(users):
     allocations = []
-    users = UserPreference.objects.values("user_id").distinct()
+
+    # Shortcut for the hungarian
+    if len(users) == 0:
+        return []
+
     unassigned_rooms = Room.objects.filter(assigned_user=None)
     rooms = []
     for room in unassigned_rooms:
