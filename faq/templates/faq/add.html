@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}FAQ: Add{% endblock %}
+
+{% block content %}
+<h1>Add a question</h1>
+<form id='q_add_form' action="{% url 'question-add' %}" method="post">
+{% csrf_token %}
+{{ form }}
+(<a href="#" onclick="$('#q_add_form').submit();">submit</a>)
+</form>
+
+{% endblock %}

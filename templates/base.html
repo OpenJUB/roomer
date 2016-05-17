@@ -19,6 +19,7 @@
 
         <li class="right">
             <ul>
+                <li><a href="{% url 'question-home' %}">FAQ</a></li>
                 {% if user.is_authenticated %}
                     {% if user.is_staff %}
                         <li><a href="{% url 'admin:index' %}">Django Admin</a></li>
@@ -85,7 +86,7 @@
 
 <footer id="main_footer" class="text-muted">
     {% block footer %}
-        For problems, please contact <a href="mailto:housing@ju-u.sg?subject=Roomer%20Issue">housing@ju-u.sg</a></footer>
+        Questions? <a href="{% url 'question-home' %}">FAQ</a>. Problems? <a href="mailto:housing@ju-u.sg?subject=Roomer%20Issue">housing@ju-u.sg</a>.
     {% endblock %}
 </footer>
 

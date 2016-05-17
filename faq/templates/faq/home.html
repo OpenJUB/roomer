@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}FAQ{% endblock %}
+
+{% block content %}
+<h1>Questions & Answers</h1>
+
+<ul class="flat-list">
+    {% for q in question_list %}
+        <li {% if not q.published %}class="text-muted"{% endif %}>
+            <h2>{{ q.question_text }}</h2>
+            <p>{{ q.answer_text|linebreaks }}</p>
+            <p>asked by {{ q.creator.first_name }}{% if q.answered_by %}, answered by {{ q.answered_by.first_name }}{% endif %}
+            </p>
+            {% if not q.published %}<p>under review, will be published once answered</p>{% endif %}
+        </li>
+    {% endfor %}
+    <li>
+        <p>No answers to your question? (<a href="{% url 'question-add' %}">ask another</a>)</p>
+    </li>
+</ul>
+
+{% endblock %}
