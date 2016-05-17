@@ -1,7 +1,7 @@
 from django.test import TestCase
 from unittest import expectedFailure
 from roomer.models import UserProfile, Room, UserPreference
-from .utils import get_cost_matrix, get_hungarian, get_dict_from_key_in_list
+from .utils import get_cost_matrix, run_hungarian, get_dict_from_key_in_list
 
 
 # Create your tests here.
