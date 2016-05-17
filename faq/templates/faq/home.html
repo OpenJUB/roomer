@@ -10,9 +10,7 @@
         <li {% if not q.published %}class="text-muted"{% endif %}>
             <h2>{{ q.question_text }}</h2>
             <p>{{ q.answer_text|linebreaks }}</p>
-            <p>asked by {{ q.creator.first_name }}{% if q.answered_by %}, answered by {{ q.answered_by.first_name }}{% endif %}
-            </p>
-            {% if not q.published %}<p>under review, will be published once answered</p>{% endif %}
+            {% if not q.published %}<p>will be published once answered</p>{% endif %}
         </li>
     {% endfor %}
     <li>
