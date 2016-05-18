@@ -1,6 +1,7 @@
 {%  extends "base.html" %}
 {% block content %}
-    <h1>Room Applications</h1>
+    <h1>Rooms</h1>
+    <h2>Apply</h2>
     {{ form.non_field_errors }}
     <ol class="flat-list">
         {% for pref in preferences %}
@@ -28,7 +29,13 @@
         <li class="text-muted">A <a href="https://tkw1536.github.io/jMap/">map</a> is available for reference.</li>
     </ul>
 
-{%  endblock %}
+    <h2>Results</h2>
+    <ul class="flat-list">
+        {% for room in results %}
+            <li>{{ room.code }}: {{ room.assigned_user.get_full_name }}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}
 
 {% block scripts %}
     {{ block.super }}

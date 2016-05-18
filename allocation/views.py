@@ -39,11 +39,11 @@ def list_preferences(request):
     else:
         form = RoomPrefForm(None, user=request.user)
 
-
     context = {
         'preferences': prefs,
         'can_apply': RoomPhase.objects.get_current() is not None,
-        'form': form
+        'form': form,
+        'results': Room.objects.filter(college=request.user.college, assigned_user__isnull=False).order_by('code')
     }
 
     return render(request, 'allocation/overview.html', context=context)
