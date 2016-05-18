@@ -69,7 +69,7 @@ def overview(request):
     for choice in settings.COLLEGE_CHOICES + [('', 'Unallocated')]:
         colleges.append({
             'name': choice[1],
-            'users': UserProfile.objects.filter(college=choice[0])
+            'users': UserProfile.objects.filter(college=choice[0]).order_by('first_name', 'last_name')
         })
 
     context['colleges'] = colleges
