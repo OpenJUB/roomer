@@ -65,4 +65,14 @@ def overview(request):
 
     context['college_choices'] = college_choices
 
+    colleges = []
+    for choice in settings.COLLEGE_CHOICES + [('', 'Unallocated')]:
+        colleges.append({
+            'name': choice[1],
+            'users': UserProfile.objects.filter(college=choice[0])
+        })
+
+    context['colleges'] = colleges
+    context['codes'] = settings.COLLEGE_CHOICES,
+
     return render(request, 'overview.html', context)

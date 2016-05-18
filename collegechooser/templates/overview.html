@@ -2,12 +2,14 @@
 {% block content %}
     <h1>College Allocation</h1>
     {% if profile.college %}
-        <h2>Results</h2>
+        <h2>You</h2>
+        <ul class="flat-list">
         {% if profile.old_college == profile.college %}
-            <p>You're staying in {{ profile.get_college_display }}.</p>
+            <li>You're staying in {{ profile.get_college_display }}.</li>
         {% else %}
-            <p>Looks like you're moving to {{ profile.get_college_display }}.</p>
+            <li>Looks like you're moving to {{ profile.get_college_display }}.</li>
         {% endif %}
+        </ul>
     {% elif window %}
         You can update your preferences until {{ window.end }}. Check back then for your allocation.
     {% else %}
@@ -15,6 +17,7 @@
     {% endif %}
 
     {% if can_change_college %}
+        <h2>Change</h2>
         {% if window.live_allocation %}
             <h3>Move to any college that's not full</h3>
             {% for code, display, percentage in college_choices %}
@@ -42,4 +45,20 @@
             </form>
         {% endif %}
     {% endif %}
+
+    <h2>Everyone</h2>
+    <ul class="flat-list">
+        {% for college in colleges %}
+            <li>
+                <h3>{{ college.name }}</h3>
+                <ul class="flat-list">
+                    {% for user in college.users %}
+                        <li>{{ user.get_full_name }}</li>
+                    {% empty %}
+                        <li class="text-muted">This college is empty</li>
+                    {% endfor %}
+                </ul>
+            </li>
+        {% endfor %}
+    </ul>
 {%  endblock %}

@@ -1,4 +1,5 @@
 from django.conf.urls import url, include
+from django.views.generic import TemplateView
 
 from .views import *
 
@@ -15,5 +16,5 @@ urlpatterns = [
 
     #url(r'^apply$', apply_for_room, name='room-request-send'),
 
-    url(r'^autocomplete$', room_code_autocomplete, name='room-code-autocomplete')
+    url(r'^autocomplete$', room_code_autocomplete, name='room-code-autocomplete'),
 ]
