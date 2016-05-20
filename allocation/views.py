@@ -21,10 +21,15 @@ def list_preferences(request):
 
     prefs = UserPreference.objects.filter(user__in=users).order_by('preference_level')
 
+    if RoomPhase.objects.get_current() is not None:
+        can_apply, error = RoomPhase.objects.get_current().is_user_eligible(request.user)
+    else:
+        can_apply = False
+
     if request.method == 'POST':
         form = RoomPrefForm(request.POST, user=request.user)
 
-        if form.is_valid():
+        if form.is_valid() and can_apply:
             room = Room.objects.get(code=form.cleaned_data.get('room_code'))
             lowest_request = UserPreference.objects.filter(user=request.user).order_by('-preference_level').first()
 
@@ -41,7 +46,8 @@ def list_preferences(request):
 
     context = {
         'preferences': prefs,
-        'can_apply': RoomPhase.objects.get_current() is not None,
+        'can_apply': can_apply,
+        'error': error,
         'form': form,
         'results': Room.objects.filter(college=request.user.college, assigned_user__isnull=False).order_by('code')
     }

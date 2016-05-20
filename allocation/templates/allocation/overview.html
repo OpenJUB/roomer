@@ -1,6 +1,8 @@
 {%  extends "base.html" %}
 {% block content %}
     <h1>Rooms</h1>
+
+    {% if can_apply %}
     <h2>Apply</h2>
     {{ form.non_field_errors }}
     <ol class="flat-list">
@@ -14,7 +16,6 @@
                 </li>
             {% endwith %}
         {% endfor %}
-        {% if can_apply %}
             <li class="text-muted" style="list-style: none;">
                 <form id="room-request-send" action="{% url 'room-request-overview' %}" method="post">
                 {% csrf_token %}
@@ -22,12 +23,11 @@
                 (<a href="#" onclick="document.getElementById('room-request-send').submit()">add</a>)
                 </form>
             </li>
-        {% endif %}
     </ol>
-
     <ul class="flat-list">
         <li class="text-muted">A <a href="https://tkw1536.github.io/jMap/">map</a> is available for reference.</li>
     </ul>
+    {% endif %}
 
     <h2>Results</h2>
     <ul class="flat-list">
