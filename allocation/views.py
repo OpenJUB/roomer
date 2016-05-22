@@ -25,6 +25,7 @@ def list_preferences(request):
         can_apply, error = RoomPhase.objects.get_current().is_user_eligible(request.user)
     else:
         can_apply = False
+        error = ['No phase active.']
 
     if request.method == 'POST':
         form = RoomPrefForm(request.POST, user=request.user)
