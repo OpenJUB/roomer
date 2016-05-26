@@ -56,36 +56,67 @@ def get_cost_matrix(matrix):
     return values
 
 
-def allocate(allocations):
+def allocate(allocations, dry_run=True):
     for allocation in allocations:
         try:
             user = UserProfile.objects.get(id=allocation["user"]["user_id"])
 
             if allocation['preference'] < 999:
-                user_pref = UserPreference.objects.get(user=user, preference_level=allocation["preference"])
-                print("User " + user.username + " to room " + user_pref.room.code)
+                prefs = UserPreference.objects.filter(user=user, preference_level=allocation["preference"])
 
-                user.allocated_room = user_pref.room
-                user.save()
+                if len(prefs) > 1:
+                    print("Multiple prefs for user {0}".format(user))
 
-                # Also allocate roommates
-                mate_associations = zip(user.roommates.all(), user_pref.room.associated.all())
+                user_pref = prefs.first()
 
-                for mate, room in mate_associations:
-                    mate.allocated_room = room
-                    mate.save()
+                if user_pref is not None:
+                    try:
+                        room_taken = user_pref.room.assigned_user is not None
+                    except UserProfile.DoesNotExist:
+                        room_taken = False
 
-                    # Clear their preferences
-                    UserPreference.objects.filter(user=mate).delete()
+                    if room_taken:
+                        print("Room {0} is taken by {1} already".format(user_pref.room, user_pref.user))
+                    else:
+                        print("User " + user.username + " to room " + user_pref.room.code)
 
-                # Clear their preferences
-                UserPreference.objects.filter(user=user).delete()
+                        if not dry_run:
+                            user.allocated_room = user_pref.room
+                            user.save()
+
+                            all_rooms = user_pref.room.associated.all()
+
+                            # Also allocate roommates
+                            mate_associations = zip(user.roommates.all(), all_rooms)
+
+                            for mate, room in mate_associations:
+                                mate.allocated_room = room
+                                mate.save()
+
+                                # Clear their preferences
+                                UserPreference.objects.filter(user=mate).delete()
+
+                            # Clear their preferences
+                            UserPreference.objects.filter(user=user).delete()
+
+                            # Clear other people who want this room
+                            UserPreference.objects.filter(room=user_pref.room).delete()
+                            UserPreference.objects.filter(room__in=all_rooms).delete()
+
+                            print("Saved")
+
+
+                else:
+                    print("UserPref was None")
 
         except:
             raise Exception("Allocation fucked up! Blame Eurovision #AustraliaFor2017")
 
 
-def get_allocations_for_unallocated_users(point_limit):
+def get_allocations_for_unallocated_users(point_limit, dry_run=True):
+    if dry_run:
+        print("**** THIS IS A DRY RUN ****")
+
     for pt in frange(15, point_limit, -0.5):
         users = UserProfile.objects.filter(allocated_room=None, points__gte=pt)
 
@@ -104,7 +135,7 @@ def get_allocations_for_unallocated_users(point_limit):
         except:
             raise Exception("Hungarian failure")
         try:
-            allocate(allocations)
+            allocate(allocations, dry_run)
         except:
             raise Exception("Allocation failure")
 
@@ -154,6 +185,3 @@ def disable_floor(college, floor):
     rooms_to_disable = Room.objects.filter(college=college, floor=floor)
     for room in rooms_to_disable:
         room.add_tag('disabled')
-
-
-
