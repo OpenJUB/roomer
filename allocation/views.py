@@ -5,6 +5,7 @@ from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.db.models import Max
+from django.db import transaction
 from django.conf import settings
 from django.utils import timezone
 
@@ -115,3 +116,22 @@ def room_code_autocomplete(request):
     rooms = sorted(room_result, key=lambda r: r['available'], reverse=True)
 
     return JsonResponse(rooms[:10], safe=False)
+
+@require_GET
+@login_required
+def swap_rooms(request):
+    if request.user.roommates.count() == 1:
+        if request.user.allocated_room is not None:
+            roommate = request.user.roommates.first()
+
+            a, b = request.user.allocated_room, roommate.allocated_room
+            request.user.allocated_room = roommate.allocated_room = None
+
+            request.user.save()
+            roommate.save()
+            request.user.allocated_room, roommate.allocated_room = b, a
+
+            request.user.save()
+            roommate.save()
+
+    return redirect('home')

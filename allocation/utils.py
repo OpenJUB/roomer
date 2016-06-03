@@ -30,6 +30,8 @@ def is_full(college_code):
 def can_allocate_to(college_code):
     return not is_full(college_code)
 
+def can_swap_rooms(user):
+    return user.roommates.count() == 1
 
 def get_college_fills():
     raw_fills = UserProfile.objects.values('college').annotate(count=Count('college'))
@@ -54,7 +56,6 @@ def get_cost_matrix(matrix):
         value = matrix[row][column]
         values.append(value)
     return values
-
 
 def allocate(allocations, dry_run=True):
     for allocation in allocations:

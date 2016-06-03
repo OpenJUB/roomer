@@ -17,4 +17,5 @@ urlpatterns = [
     #url(r'^apply$', apply_for_room, name='room-request-send'),
 
     url(r'^autocomplete$', room_code_autocomplete, name='room-code-autocomplete'),
+    url(r'^swap$', swap_rooms, name='swap-rooms'),
 ]
