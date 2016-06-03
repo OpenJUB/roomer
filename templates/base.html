@@ -55,7 +55,10 @@
         {% if user.allocated_room %}
             <h2>Allocated Rooms</h2>
             <ul class="flat-list">
-                <li>{{ user.first_name }}: {{ user.allocated_room }}</li>
+                <li>
+                    {{ user.first_name }}: {{ user.allocated_room }}
+                    (<a href="{% url 'swap-rooms' %}">swap</a>)
+                </li>
                 {% for mate in user.roommates.all %}
                     <li>{{ mate.first_name }}: {{ mate.allocated_room }}</li>
                 {% endfor %}
