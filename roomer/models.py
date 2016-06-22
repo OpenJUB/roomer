@@ -326,14 +326,6 @@ class RoomTag(models.Model):
     def __str__(self):
         return self.room.code + " [" + self.tag + "]"
 
-
-class College(models.Model):
-    name = CollegeField()
-
-    def __str__(self):
-        return self.get_name_display()
-
-
 # TODO Check if people are already roommates when creating request
 class RoommateRequest(models.Model):
     sender = models.ForeignKey(UserProfile, related_name='outbox')
