@@ -53,7 +53,7 @@ class OjubBackend(object):
                 'last_name': data['lastName'],
                 'email': data['email'],
                 'seniority': now.year - 2000 - year + 3,
-                'year': int(data['year']),
+                'year': year,
                 'major': data['major'],
                 'country': data['country'],
                 'old_college': get_college_code(data['college']),
