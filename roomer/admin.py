@@ -1,5 +1,5 @@
 from django.contrib import admin
-from roomer.models import UserProfile, RoommateRequest, Room, RoomTag, College, UserPreference
+from roomer.models import UserProfile, RoommateRequest, Room, RoomTag, UserPreference
 
 
 def make_tall(modeladmin, request, queryset):
@@ -72,4 +72,3 @@ class RoomAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Room, RoomAdmin)
-admin.site.register(College)

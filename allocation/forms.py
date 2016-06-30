@@ -2,7 +2,7 @@ from django import forms
 from django.utils import timezone
 
 from allocation.models import RoomPhase
-from roomer.models import Room, College
+from roomer.models import Room
 
 
 class RoomPrefForm(forms.Form):
