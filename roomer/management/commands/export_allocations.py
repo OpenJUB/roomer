@@ -1,5 +1,6 @@
 import StringIO
 import codecs
+import requests
 
 __author__ = 'leonhard'
 
@@ -45,6 +46,20 @@ class UnicodeWriter:
             self.writerow(row)
 
 
+eid_cache = {}
+
+def get_eid(username):
+    API_BASE = "https://api.jacobs.university/user/name/"
+    TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjU3N2U5YWM3YmU4Y2UxNTMwOTFmNGYwNyIsInVzZXIiOiJsa3Vib3NjaGVrIiwiY3JlYXRlZEF0IjoiVGh1IEp1bCAwNyAyMDE2IDIwOjA5OjExIEdNVCswMjAwIChDRVNUKSIsImlhdCI6MTQ2NzkxNDk1Mn0.D5zb0mfLmjveD70MF7cMKd81fv7OR-3q8J_EW7KdD4Y"
+
+    if username not in eid_cache:
+        r = requests.get(API_BASE + username + "?token=" + TOKEN)
+        user_data = r.json()
+        eid_cache[username] = user_data['eid']
+
+    return eid_cache[username]
+
+
 class Command(BaseCommand):
     help = 'Exports allocations as CSV files.'
 
@@ -67,7 +82,7 @@ class Command(BaseCommand):
 
         with open('users.csv', 'wb') as users_file:
             writer = UnicodeWriter(users_file)
-            writer.writerow(['Username', 'Full Name', 'Room Code', 'Email', 'Comment'])
+            writer.writerow(['Username', 'EID', 'Full Name', 'Room Code', 'Email', 'Comment'])
 
             qs = UserProfile.objects.exclude(allocated_room=None)
 
@@ -77,4 +92,4 @@ class Command(BaseCommand):
                 else:
                     user_room_code = 'None'
 
-                writer.writerow([user.username, user.get_full_name(), user_room_code, user.email, ''])
+                writer.writerow([user.username, get_eid(user.username), user.get_full_name(), user_room_code, user.email, ''])
