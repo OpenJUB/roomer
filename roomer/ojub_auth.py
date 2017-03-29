@@ -98,26 +98,27 @@ class OjubBackend(object):
                 continue
 
             data = r2.json()
-
             try:
-                year = int(data['year'])
-            except ValueError:
-                year = now.year
 
-            ddict = {
-                'username': stud.username,
-                'first_name': data['firstName'],
-                'last_name': data['lastName'],
-                'email': data['email'],
-                'status': data['status'],
-                'seniority': now.year - 2000 - year + 3,
-                'year': int(data['year']),
-                'major': data['major'],
-                'country': data['country'],
-                'old_college': get_college_code(data['college']),
-            }
+                try:
+                    year = int(data['year'])
+                except ValueError:
+                    year = now.year
 
-            try:
+                ddict = {
+                    'username': stud.username,
+                    'first_name': data['firstName'],
+                    'last_name': data['lastName'],
+                    'email': data['email'],
+                    'status': data['status'],
+                    'seniority': now.year - 2000 - year + 3,
+                    'year': int(data['year']),
+                    'major': data['major'],
+                    'country': data['country'],
+                    'old_college': get_college_code(data['college']),
+                }
+
+
 
                 for (key, value) in ddict.items():
                     setattr(stud, key, value)
