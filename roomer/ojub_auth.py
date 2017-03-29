@@ -4,7 +4,7 @@ from roomer.utils import get_college_code
 import requests
 import datetime
 
-OPENJUB_BASE = "https://api.jacobs-cs.club/"
+OPENJUB_BASE = "https://legacyapi.jacobs.university/"
 
 
 class OjubBackend(object):
@@ -70,6 +70,62 @@ class OjubBackend(object):
         user.save()
 
         return user
+
+
+    def refresh_users(self, username=None, password=None):
+        r = requests.post(OPENJUB_BASE + "auth/signin",
+                          data={'username': username, 'password': password})
+
+        if r.status_code != requests.codes.ok:
+            return None
+
+        resp = r.json()
+
+        token = resp['token']
+
+        now = datetime.datetime.now()
+
+
+        user_model = get_user_model()
+        for stud in user_model.objects.all():
+            r2 = requests.get(OPENJUB_BASE + "user/name/{}"
+                               .format(stud.username),
+                               params={'token': token})
+
+            if r2.status_code != requests.codes.ok:
+                print(r2.json())
+                print("Skipped {}".format(stud.username))
+                continue
+
+            data = r2.json()
+
+            try:
+                year = int(data['year'])
+            except ValueError:
+                year = now.year
+
+            ddict = {
+                'username': stud.username,
+                'first_name': data['firstName'],
+                'last_name': data['lastName'],
+                'email': data['email'],
+                'status': data['status'],
+                'seniority': now.year - 2000 - year + 3,
+                'year': int(data['year']),
+                'major': data['major'],
+                'country': data['country'],
+                'old_college': get_college_code(data['college']),
+            }
+
+            try:
+
+                for (key, value) in ddict.items():
+                    setattr(stud, key, value)
+
+                stud.save()
+                print("Updated {}".format(data['username']))
+            except ValueError:
+                print("Errored {}".format(data['username']))
 
 
     def get_user(self, user_id):

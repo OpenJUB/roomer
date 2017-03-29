@@ -2,7 +2,7 @@ import requests
 import json
 import datetime
 
-from utils import get_college_code
+from .utils import get_college_code
 
 
 def generate_fixture(fixture_file='users.json'):
