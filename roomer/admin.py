@@ -39,8 +39,9 @@ class PreferenceInline(admin.TabularInline):
 
 
 class UserProfileAdmin(admin.ModelAdmin):
-    search_fields = ['username', 'first_name', 'last_name']
-    readonly_fields = ('points', 'year', 'major', 'country', 'old_college', 'seniority')
+    search_fields = ['username', 'first_name', 'last_name', 'status']
+    readonly_fields = ('points', 'year', 'major', 'country', 'old_college',
+                       'seniority', 'status')
     model = UserProfile
 
     list_filter = ('college', 'old_college', 'major', 'year')
