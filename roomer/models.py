@@ -94,6 +94,7 @@ class UserProfile(AbstractUser):
     year = models.IntegerField(editable=False)
     major = models.CharField(max_length=128, editable=False)
     country = models.CharField(max_length=64, editable=False)
+    status = models.CharField(max_length=100, editable=False)
 
     # To allow foundation years to participate
     is_whitelisted = models.BooleanField(default=False)

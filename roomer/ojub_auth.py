@@ -52,6 +52,7 @@ class OjubBackend(object):
                 'first_name': data['firstName'],
                 'last_name': data['lastName'],
                 'email': data['email'],
+                'status': data['status'],
                 'seniority': now.year - 2000 - year + 3,
                 'year': int(data['year']),
                 'major': data['major'],
