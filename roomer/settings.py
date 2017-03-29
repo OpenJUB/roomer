@@ -167,10 +167,10 @@ COLLEGE_CHOICES = [
 ]
 
 COLLEGE_CAPACITIES = [
-    ('NM', 1),
-    ('C3', 2),
-    ('KR', 3),
-    ('ME', 4)
+    ('NM', 164),
+    ('C3', 222),
+    ('KR', 170),
+    ('ME', 170)
 ]
 
 # Maximum filling of the college, in percent
