@@ -29,6 +29,10 @@ class Command(BaseCommand):
     def get_credentials(self, options):
         if options["username"] is None:
             self.stdout.write("Username: ")
+            try:
+                input = raw_input
+            except NameError:
+                pass
             user = input()
         else:
             user = options["username"]
