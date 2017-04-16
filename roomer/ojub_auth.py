@@ -128,6 +128,42 @@ class OjubBackend(object):
             except ValueError:
                 print("Errored {}".format(data['username']))
 
+    def get_allocatable(self, username=None, password=None):
+        """ Gets a list of all students that should be allocated """
+
+        r = requests.post(OPENJUB_BASE + "auth/signin",
+                          data={'username': username, 'password': password})
+
+        if r.status_code != requests.codes.ok:
+            return None
+
+        resp = r.json()
+
+        token = resp['token']
+
+        r2 = requests.get(OPENJUB_BASE +
+                          "query/active:true%20status:undergrad",
+                          params={'token': token, 'limit': 10000})
+
+        now = datetime.datetime.now()
+
+
+        def check_year(yr):
+            """ Check the year by checking if it is allowed"""
+
+            # if you do not graduate this year, you are allowed to be allocated
+            try:
+                return int(yr) > (now.year - 2000)
+            except:
+                return False
+
+        # filter the results by years
+        users = filter(lambda u:check_year(u["year"]), r2.json()["data"])
+
+        # and return a list of usernames
+        return list(map(lambda u: u["username"], users))
+
+
 
     def get_user(self, user_id):
         user_model = get_user_model()
