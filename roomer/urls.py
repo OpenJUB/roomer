@@ -17,11 +17,12 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 
-from .views import home
+from .views import home, stats
 from .forms import RoomerAuthForm
 
 urlpatterns = [
     url(r'^$', home, name="home"),
+    url(r'^stats/', stats, name="stats"),
     url(r'^admin/', admin.site.urls),
 
     # College allocation

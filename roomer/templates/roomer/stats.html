@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}Stats{% endblock %}
+
+{% block content %}
+<h1>Allocation Statistics</h1>
+
+<h2>College Fills</h2>
+<ul class="flat-list">
+{% for key, value in fills.items %}
+    <li>{{ key|default:"--" }}: {{ value }}</li>
+{% endfor %}
+</ul>
+<ul class="flat-list">
+{% for key, value in percentage_fills.items %}
+    <li>{{ key }}: {{ value|floatformat:2 }}%</li>
+{% endfor %}
+</ul>
+
+<h2>Misc. Numbers</h2>
+<p>FAQ Questions: {{ faq_count }}</p>
+<p>Number of Users: {{ user_count }}</p>
+
+{% endblock %}
