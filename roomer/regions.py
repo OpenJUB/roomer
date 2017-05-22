@@ -19,6 +19,7 @@ regions = {
         'Ecuador',
         'El Salvador',
         'French Guiana',  # May not be in the system
+        'Grenada',  # Conflict Resolution
         'Guatemala',
         'Guyana',
         'Haiti',
@@ -31,7 +32,9 @@ regions = {
         'Paraguay',
         'Peru',
         'Puerto Rico',  # may not be in system
+        'St Kitts & Nevis',  # Conflict Resolution
         'St Lucia',
+        'Saint Vincent & the Grenadines', # Conflict Resolution
         'Suriname',
         'Trinidad & Tobago',
         'Uruguay',
@@ -99,15 +102,18 @@ regions = {
         'Malta',
         'Macedonia',
         'Moldova',
+        'Montenegro',  # Conflict Resolution
         'Poland',
         'Portugal',
         'Romania',
         'Russia',
+        'San Marino', # Conflict Resolution
         'Serbia',
         'Slovakia',
         'Slovenia',
         'Spain',
         'Ukraine'
+        'Vatican City',  # Conflict Resolution
     ],
 
     'South-Central Asia': [
@@ -218,6 +224,7 @@ regions = {
         'Lesotho',
         'Madagascar',
         'Malawi',
+        'Maldives',  # Conflict Resolution
         'Mauritius',
         'Mozambique',
         'Namibia',
@@ -232,14 +239,4 @@ regions = {
         'Zambia',
         'Zimbabwe',
     ],
-
-    'Unknown': [
-        'Grenada',  # ???
-        'Maldives',  # ???
-        'Montenegro',  # ???
-        'Saint Vincent & the Grenadines',
-        'San Marino',
-        'St Kitts & Nevis',
-        'Vatican City',
-    ]
 }
