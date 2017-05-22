@@ -267,6 +267,9 @@ class Room(models.Model):
             if raise_exception:
                 raise e
 
+    def remove_tag(self, tag):
+        return self.tags.filter(tag=tag).delete()
+
     def get_tag_list(self):
         return RoomTag.objects.filter(room=self)
 
