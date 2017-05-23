@@ -156,23 +156,21 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-COLLEGE_CODES = ['', 'NM', 'ME', 'KR', 'C3', 'CV']
+COLLEGE_CODES = ['', 'NM', 'ME', 'KR', 'C3']
 
 # College choices /short_name, long_name, capacity)
 COLLEGE_CHOICES = [
     ('NM', 'Nordmetall'),
     ('C3', 'C3'),
     ('KR', 'Krupp'),
-    ('ME', 'Mercator'),
-    ('CV', 'College V')
+    ('ME', 'Mercator')
 ]
 
 COLLEGE_CAPACITIES = [
     ('NM', 164),
     ('C3', 222),
     ('KR', 170),
-    ('ME', 170),
-    ('CV', 150)
+    ('ME', 170)
 ]
 
 # Maximum filling of the college, in percent

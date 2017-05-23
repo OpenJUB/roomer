@@ -2,8 +2,7 @@ COLLEGE_CHOICES = [
     ('NM', 'Nordmetall'),
     ('C3', 'C3'),
     ('KR', 'Krupp'),
-    ('ME', 'Mercator'),
-    ('CV', 'College V')
+    ('ME', 'Mercator')
 ]
 
 
