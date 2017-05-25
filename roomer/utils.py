@@ -35,8 +35,13 @@ def get_points_breakdown(user_profile):
 
     # Add user points
     for user in users:
+        if user.seniority == 1:
+            yeartext = 'Foundation Year / 1st Year '
+        else:
+            yeartext = '{} Year'.format(get_ordinal(user.seniority))
+
         ret.append({
-            'text': u'{0}: {1} year'.format(user.first_name, get_ordinal(user.seniority)),
+            'text': u'{0}: {1}'.format(user.first_name, yeartext),
             'points': user.seniority
         })
 

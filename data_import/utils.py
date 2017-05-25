@@ -24,13 +24,18 @@ def create_user_dict(uname, data):
     except ValueError:
         year = now.year
 
+    if data['status'] == 'foundation-year':
+        seniority = 1
+    else:
+        seniority = now.year - 2000 - year + 3
+
     return {
         'username': uname,
         'first_name': data['firstName'],
         'last_name': data['lastName'],
         'email': data['email'],
         'status': data['status'],
-        'seniority': now.year - 2000 - year + 3,
+        'seniority': seniority,
         'year': int(data['year']),
         'major': data['major'],
         'country': data['country'],
