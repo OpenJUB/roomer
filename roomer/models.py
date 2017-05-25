@@ -4,6 +4,8 @@ from django.db import models
 from django.db.models import Max
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator, ValidationError
+
+from data_import.utils import get_housing_code
 from .regions import regions
 
 from decimal import Decimal
@@ -170,21 +172,21 @@ class UserProfile(AbstractUser):
     def seniority_points(self):
 
         # foundation year => 1
-        if self.housing_type == settings.HOUSING_TYPE_FOUNDATION_YEAR:
+        if self.housing_type == get_housing_code(settings.HOUSING_TYPE_FOUNDATION_YEAR):
             return 1
 
         # bachelors: 1st year => 1, 2nd year => 2, 3rd+ Year => 2
-        elif self.housing_type == settings.HOUSING_TYPE_UG_1:
+        elif self.housing_type == get_housing_code(settings.HOUSING_TYPE_UG_1):
             return 1
-        elif self.housing_type == settings.HOUSING_TYPE_UG_2:
+        elif self.housing_type == get_housing_code(settings.HOUSING_TYPE_UG_2):
             return 2
-        elif self.housing_type == settings.HOUSING_TYPE_UG_3:
+        elif self.housing_type == get_housing_code(settings.HOUSING_TYPE_UG_3):
             return 2
 
         # masters: 1st year => 1, 2nd+ year => 2
-        elif self.housing_type == settings.HOUSING_TYPE_MS_1:
+        elif self.housing_type == get_housing_code(settings.HOUSING_TYPE_MS_1):
             return 1
-        elif self.housing_type == settings.HOUSING_TYPE_MS_2:
+        elif self.housing_type == get_housing_code(settings.HOUSING_TYPE_MS_2):
             return 2
 
         # whatever you are, you get no points
