@@ -4,6 +4,7 @@ from .views import *
 
 urlpatterns = [
     url(r'^$', list_preferences, name='room-request-overview'),
+    url(r'results$', room_results, name='room-results'),
 
     url(r'^request/(?P<pref_id>\d+)/', include(
         [

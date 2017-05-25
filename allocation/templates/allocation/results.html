@@ -1,0 +1,15 @@
+{%  extends "base.html" %}
+{% block content %}
+    <h1>Allocation Results</h1>
+
+    Find below a list of rooms that have been allocated.
+    {% for c in allocations %}
+        <h2>{{ c.name | safe }}</h2>
+        <ul>
+            {% for r in c.rooms  %}
+                <li>{{ r.code }}: {{ r.assigned_user }}</li>
+            {% endfor %}
+        </ul>
+    {% endfor %}
+
+{%  endblock %}

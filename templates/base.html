@@ -17,6 +17,10 @@
         <li><a href="{% url 'roommate-overview' %}">Roommates</a></li>
         <li><a href="{% url 'room-request-overview' %}">Rooms</a></li>
 
+        {% if user.is_authenticated %}
+            <li><a href="{% url 'room-results' %}">Results</a></li>
+        {% endif %}
+
         <li class="right">
             <ul>
                 <li><a href="{% url 'question-home' %}">FAQ</a></li>
