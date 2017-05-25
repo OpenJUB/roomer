@@ -6,6 +6,7 @@ from django.utils import timezone
 
 from allocation.models import RoomPhase
 from collegechooser.models import UpdateWindow
+from data_import.utils import get_housing_string
 
 from .models import UserProfile
 
@@ -35,14 +36,10 @@ def get_points_breakdown(user_profile):
 
     # Add user points
     for user in users:
-        if user.seniority == 1:
-            yeartext = 'Foundation Year / 1st Year '
-        else:
-            yeartext = '{} Year'.format(get_ordinal(user.seniority))
 
         ret.append({
-            'text': u'{0}: {1}'.format(user.first_name, yeartext),
-            'points': user.seniority
+            'text': u'{0}: {1}'.format(user.first_name, get_housing_string(user.housing_type)),
+            'points': user.seniority_points
         })
 
         if user.college == user.old_college:
@@ -188,7 +185,7 @@ def make_freshie(username):
 
     fresh, created = UserProfile.objects.get_or_create(
         year=now.year + 3,
-        seniority=0,
+        housing_type=settings.HOUSING_TYPE_FRESHIE,
         first_name='Freshie',
         last_name='McFreshface',
         is_active=False,

@@ -1,4 +1,5 @@
 from django.test import TestCase
+from django.conf import settings
 from roomer.models import UserProfile, RoommateRequest
 
 
@@ -7,7 +8,7 @@ class UserProfileTestCase(TestCase):
         # Basically Leo
         UserProfile.objects.create(
             username='a',
-            seniority=2,
+            housing_type=settings.HOUSING_TYPE_UG_1,
             year=17,
             major='Computer Science',
             country='Germany',
@@ -18,7 +19,7 @@ class UserProfileTestCase(TestCase):
         # Basically Sid
         UserProfile.objects.create(
             username='b',
-            seniority=3,
+            housing_type=settings.HOUSING_TYPE_UG_3,
             year=16,
             major='Computer Science',
             country='India',
@@ -29,7 +30,7 @@ class UserProfileTestCase(TestCase):
         # Basically a mover
         UserProfile.objects.create(
             username='c',
-            seniority=1,
+            housing_type=settings.HOUSING_TYPE_UG_1,
             year=18,
             major='Physics',
             country='Albania',
@@ -40,7 +41,7 @@ class UserProfileTestCase(TestCase):
         # Basically a Nordie freshie
         UserProfile.objects.create(
             username='d',
-            seniority=1,
+            housing_type=settings.HOUSING_TYPE_UG_1,
             year=18,
             major='Chemistry',
             country='Albania',

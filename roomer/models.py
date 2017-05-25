@@ -107,7 +107,7 @@ class UserProfile(AbstractUser):
     college_pref = models.CharField(max_length=11, blank=True)
 
     # How many years this person has been at university
-    seniority = models.IntegerField(editable=False)
+    housing_type = models.IntegerField(choices = settings.HOUSING_TYPES, editable=False)
 
     # Extra points, added manually by the admin
     extra_points = models.IntegerField(default=0)
@@ -166,8 +166,35 @@ class UserProfile(AbstractUser):
 
         return "other"
 
+    @property
+    def seniority_points(self):
+
+        # foundation year => 1
+        if self.housing_type == settings.HOUSING_TYPE_FOUNDATION_YEAR:
+            return 1
+
+        # bachelors: 1st year => 1, 2nd year => 2, 3rd+ Year => 2
+        elif self.housing_type == settings.HOUSING_TYPE_UG_1:
+            return 1
+        elif self.housing_type == settings.HOUSING_TYPE_UG_2:
+            return 2
+        elif self.housing_type == settings.HOUSING_TYPE_UG_3:
+            return 2
+
+        # masters: 1st year => 1, 2nd+ year => 2
+        elif self.housing_type == settings.HOUSING_TYPE_MS_1:
+            return 1
+        elif self.housing_type == settings.HOUSING_TYPE_MS_2:
+            return 2
+
+        # whatever you are, you get no points
+        return 0
+
+
+
+
     def get_user_points(self):
-        points = self.seniority + self.extra_points
+        points = self.seniority_points + self.extra_points
 
         if self.old_college == self.college:
             points += self.COLLEGE_SPIRIT_POINTS

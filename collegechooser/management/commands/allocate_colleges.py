@@ -27,19 +27,20 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         pot = UserProfile.objects.filter(college='').exclude(
-            college_pref='').order_by(
-            '-seniority')
+            college_pref='')
 
-        while pot:
+        pot = list(sorted(pot, key=lambda u:u.seniority_points))
+
+        while len(pot) != 0:
 
             # while we have some students we get all of the ones in the
             # current seniority
 
-            seniors = pot[0].seniority
+            seniors = pot[0].seniority_points
 
-            studs = pot.filter(seniority = seniors)[:]
-            pot = pot.exclude(seniority = seniors)
+            studs = list(filter(lambda u:u.seniority_points == seniors, pot))
+            pot = list(filter(lambda u:u.seniority_points != seniors, pot))
 
             # and iterate through them randomly
-            for stud in studs.order_by('?'):
+            for stud in random.shuffle(studs):
                 self.molest(stud)

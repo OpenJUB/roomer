@@ -173,6 +173,30 @@ COLLEGE_CAPACITIES = [
     ('ME', 170)
 ]
 
+# types of students
+HOUSING_TYPE_UNKNOWN = 'Unknown'
+HOUSING_TYPE_FRESHIE = 'Freshie'
+HOUSING_TYPE_FOUNDATION_YEAR = 'Foundation Year'
+HOUSING_TYPE_UG_1 = '1st Year (Undergrad)'
+HOUSING_TYPE_UG_2 = '2nd Year (Undergrad)'
+HOUSING_TYPE_UG_3 = '3rd+ Year (Undergrad)'
+HOUSING_TYPE_MS_1 = '1st Year (Master)'
+HOUSING_TYPE_MS_2 = '2nd+ Year (Master)'
+
+HOUSING_TYPES = [
+    (0, HOUSING_TYPE_UNKNOWN),
+    (1, HOUSING_TYPE_FRESHIE),
+
+    (2, HOUSING_TYPE_FOUNDATION_YEAR),
+
+    (3, HOUSING_TYPE_UG_1),
+    (4, HOUSING_TYPE_UG_2),
+    (5, HOUSING_TYPE_UG_3),
+
+    (6, HOUSING_TYPE_MS_1),
+    (7, HOUSING_TYPE_MS_2),
+]
+
 # Maximum filling of the college, in percent
 MAX_COLLEGE_FILL = 75
 
