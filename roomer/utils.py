@@ -6,7 +6,7 @@ from django.utils import timezone
 
 from allocation.models import RoomPhase
 from collegechooser.models import UpdateWindow
-from data_import.utils import get_housing_string
+from data_import.utils import get_housing_string, get_housing_code
 
 from .models import UserProfile
 
@@ -185,7 +185,7 @@ def make_freshie(username):
 
     fresh, created = UserProfile.objects.get_or_create(
         year=now.year + 3,
-        housing_type=settings.HOUSING_TYPE_FRESHIE,
+        housing_type=get_housing_code(settings.HOUSING_TYPE_FRESHIE),
         first_name='Freshie',
         last_name='McFreshface',
         is_active=False,
