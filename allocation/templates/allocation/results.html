@@ -7,7 +7,7 @@
         <h2>{{ c.name | safe }}</h2>
         <ul>
             {% for r in c.rooms  %}
-                <li>{{ r.code }}: {{ r.assigned_user }}</li>
+                <li>{{ r.code }}: {{ r.assigned_user.first_name }}  {{ r.assigned_user.last_name }}</li>
             {% endfor %}
         </ul>
     {% endfor %}
