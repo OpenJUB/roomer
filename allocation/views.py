@@ -129,4 +129,5 @@ def room_results(request):
             } for (p, n) in settings.COLLEGE_CHOICES
         ]
     }
+
     return render(request, 'allocation/results.html', context=context)

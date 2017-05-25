@@ -2,7 +2,13 @@
 {% block content %}
     <h1>Allocation Results</h1>
 
-    Find below a list of rooms that have been allocated.
+    <p>
+        Find below a list of rooms that have been allocated.
+    </p>
+    <p>
+        Rooms allocated to <i>Freshie McFreshface</i> are reserved for freshies rooming with existing students.
+    </p>
+
     {% for c in allocations %}
         <h2>{{ c.name | safe }}</h2>
         <ul>
