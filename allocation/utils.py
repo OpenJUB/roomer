@@ -58,34 +58,54 @@ def get_cost_matrix(matrix):
 
 def allocate(allocations):
     for allocation in allocations:
-        try:
-            user = UserProfile.objects.get(id=allocation["user"]["user_id"])
+        allocate_one(allocation)
 
-            if allocation['preference'] < 999:
-                user_pref = UserPreference.objects.get(user=user, preference_level=allocation["preference"])
-                print("User " + user.username + " to room " + user_pref.room.code)
+def allocate_one(allocation):
+    try:
+        user = UserProfile.objects.get(id=allocation["user"]["user_id"])
 
-                user.allocated_room = user_pref.room
-                user.save()
+        if allocation['preference'] < 999:
+            user_pref = UserPreference.objects.filter(user=user, preference_level=allocation["preference"]).first()
+            print("User " + user.username + " to room " + user_pref.room.code)
 
-                # Also allocate roommates
-                mate_associations = zip(user.roommates.all(), user_pref.room.associated.all())
+            user.allocated_room = user_pref.room
+            user.save()
 
-                for mate, room in mate_associations:
-                    mate.allocated_room = room
-                    mate.save()
+            # Also allocate roommates
+            mate_associations = zip(user.roommates.all(), user_pref.room.associated.all())
 
-                    # Clear their preferences
-                    UserPreference.objects.filter(user=mate).delete()
+            for mate, room in mate_associations:
+                mate.allocated_room = room
+                mate.save()
 
                 # Clear their preferences
-                UserPreference.objects.filter(user=user).delete()
+                UserPreference.objects.filter(user=mate).delete()
 
-        except:
-            raise Exception("Allocation fucked up! Blame Eurovision #AustraliaFor2017")
+            # Clear their preferences
+            UserPreference.objects.filter(user=user).delete()
+    except Exception as e:
+        raise e
+        raise Exception("Allocation fucked up! Blame Eurovision #AustraliaFor2017")
+
 
 
 def get_allocations_for_unallocated_users(point_limit):
+    for pt in frange(15, point_limit, -0.5):
+        users = UserProfile.objects.filter(allocated_room=None, points__gte=pt)
+
+        user_ids = []
+        user_prefs = []
+        for user in users:
+            if user.id not in user_ids:
+                user_prefs.append({"user_id": user.id})
+                user_ids.append(user.id)
+
+        if users.count() > 0:
+            print("Allocating {0} users with {1} or more points".format(users.count(), pt))
+
+        run_better_thing(user_prefs)
+
+def get_allocations_for_unallocated_users_old(point_limit):
     for pt in frange(15, point_limit, -0.5):
         users = UserProfile.objects.filter(allocated_room=None, points__gte=pt)
 
@@ -108,7 +128,8 @@ def get_allocations_for_unallocated_users(point_limit):
         except:
             raise Exception("Allocation failure")
 
-x = get_allocations_for_unallocated_users
+x = get_allocations_for_unallocated_users_old
+y = get_allocations_for_unallocated_users
 
 
 def run_hungarian(users):
@@ -140,6 +161,60 @@ def run_hungarian(users):
         allocations.append({"user": user, "preference": hungarian[idx]})
     return allocations
 
+def run_better_thing(users):
+    """
+        :param users: Set of users with a given user level
+    """
+
+    user_objects = list(map(
+        lambda u:u["user_id"],
+        users
+    ))
+
+    # find all preferences that are needed
+    prefs = lambda:UserPreference.objects.filter(
+        user__in = user_objects
+    ).order_by('preference_level')
+
+    # go over all the rooms that are involved
+    rooms = prefs().values('room').distinct()
+
+    for r in rooms:
+        room = Room.objects.get(id=r["room"])
+
+        try:
+            room.assigned_user
+            has_user = True
+        except:
+            has_user = False
+
+        is_disabled = room.has_tag('disabled')
+
+        for proom in room.associated.all():
+            if proom.has_tag('disabled'):
+                is_disabled = True
+                break
+
+        if not is_disabled and not has_user:
+
+            try:
+                # find the highest prefernce
+                level = prefs().filter(room = room).first().preference_level
+            except AttributeError:
+                continue
+
+            # all the ones for the current level
+            choices = prefs().filter(room = room, preference_level = level).order_by('?')
+
+            # take the first one
+            choice = choices.first()
+
+            # store in the list of allocations
+            allocate_one({
+                "user": {"user_id": choice.user.id},
+                "preference": choice.preference_level
+            })
+
 
 def get_dict_from_key_in_list(k, v, l):
     for d in l:
@@ -154,6 +229,3 @@ def disable_floor(college, floor):
     rooms_to_disable = Room.objects.filter(college=college, floor=floor)
     for room in rooms_to_disable:
         room.add_tag('disabled')
-
-
-
