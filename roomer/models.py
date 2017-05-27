@@ -47,6 +47,17 @@ class UserPreference(models.Model):
     def get_lowest_preference(self):
         lowest = self.get_related_preferences().aggregate(Max('preference_level'))
         return lowest.get('preference_level__max', 1)
+    
+    def sanitize(self):
+
+        # Get all preferences by the user
+        preferences = UserPreference.objects.filter(user=self.user).order_by('preference_level')
+        n = 7
+        for (i, p) in enumerate(preferences[:n]):
+            p.preference_level = i + 1
+            p.save()
+        for p in preferences[n:]:
+            p.delete()
 
     def move_up(self):
         if self.preference_level == 1:
@@ -62,6 +73,9 @@ class UserPreference(models.Model):
         self.preference_level -= 1
         self.save()
 
+        self.sanitize()
+        
+
     def move_down(self):
         if self.preference_level == self.get_lowest_preference():
             return
@@ -75,6 +89,8 @@ class UserPreference(models.Model):
 
         self.preference_level += 1
         self.save()
+
+        self.sanitize()
 
     def can_edit(self, user):
         return user == self.user or user in self.user.roommates.all()
