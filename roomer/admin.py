@@ -1,5 +1,8 @@
 from django.contrib import admin
-from roomer.models import UserProfile, RoommateRequest, Room, RoomTag, College, UserPreference
+from django.db.models import Q
+
+from roomer.models import UserProfile, RoommateRequest, Room, RoomTag, College, \
+    UserPreference
 
 
 def make_tall(modeladmin, request, queryset):
@@ -71,10 +74,35 @@ class TagInline(admin.TabularInline):
     fields = ['tag']
 
 
+class TakenFilter(admin.SimpleListFilter):
+    title = 'Allocation Status'
+    parameter_name = 'allocated'
+
+    def lookups(self, request, model_admin):
+        return [
+            ('taken', 'Allocated'),
+            ('free', 'Free')
+        ]
+
+    def queryset(self, request, queryset):
+        if self.value() == 'taken':
+            return queryset.filter(~Q(assigned_user=None))
+        elif self.value() == 'free':
+            return queryset.filter(assigned_user=None)
+        else:
+            return queryset
+
+
 class RoomAdmin(admin.ModelAdmin):
     search_fields = ['code']
 
-    list_filter = ('college', 'block', 'floor')
+    list_filter = (
+        'tags__tag',
+        TakenFilter,
+        'college',
+        'block',
+        'floor',
+    )
     list_display = ('code', 'assigned_user')
     actions = [disable_room, enable_room, make_room_quiet]
 
