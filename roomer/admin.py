@@ -80,15 +80,18 @@ class TakenFilter(admin.SimpleListFilter):
 
     def lookups(self, request, model_admin):
         return [
-            ('taken', 'Allocated'),
-            ('free', 'Free')
+            ('taken', 'Taken'),
+            ('disabled', 'Free & Disabled'),
+            ('free', 'Free & Allocatable'),
         ]
 
     def queryset(self, request, queryset):
         if self.value() == 'taken':
             return queryset.filter(~Q(assigned_user=None))
+        elif self.value() == 'disabled':
+            return queryset.filter(assigned_user=None).filter(tags__tag = "disabled")
         elif self.value() == 'free':
-            return queryset.filter(assigned_user=None)
+            return queryset.filter(assigned_user=None).exclude(tags__tag="disabled")
         else:
             return queryset
 
