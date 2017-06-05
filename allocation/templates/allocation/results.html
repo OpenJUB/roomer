@@ -2,20 +2,122 @@
 {% block content %}
     <h1>Allocation Results</h1>
 
-    <p>
-        Find below a list of rooms that have been allocated.
-    </p>
-    <p>
-        Rooms allocated to <i>Freshie McFreshface</i> are reserved for freshies rooming with existing students.
-    </p>
+    <table>
+        <tr>
+            <td>
+                 <ul>
+                    {% for c in allocations %}
+                        <li>
+                            <a href="#{{ c.name }}">{{ c.name }}</a>
+                        </li>
+                        <li>
+                            <ul>
+                                <li>
+                                    <a href="#{{ c.name }}_rooms">Rooms</a>
+                                </li>
+                                <li>
+                                    <a href="#{{ c.name }}_users">Users</a>
+                                </li>
+                            </ul>
+                        </li>
+                    {% endfor %}
+                    <li>
+                        <a href="#unallocated_users">Unallocated Users</a>
+                    </li>
+                </ul>
+            </td>
+            <td style="vertical-align: top;">
+                <p>
+                    Find below the current state of allocations.
+                    They may or may not be final, depending on the schedule.
+                    Please only use the information on your home page when writing issues.
+                </p>
+                <p>
+                    Rooms allocated to <span style="color:lightgreen">Freshie McFreshface</span> are reserved for freshies rooming with existing students.
+                    Rooms in <span style="background-color:lightgray">gray</span> are disabled (i.e. not open for allocation).
+                </p>
+            </td>
+        </tr>
+    </table>
 
     {% for c in allocations %}
-        <h2>{{ c.name | safe }}</h2>
-        <ul>
+        <h2>{{ c.name }}</h2>
+        <a name="{{ c.name }}"></a>
+
+        <h3>Rooms</h3>
+        <a name="{{ c.name }}_rooms"></a>
+
+        <table>
+            <tr>
+                <th>Room</th>
+                <th>Allocation</th>
+            </tr>
             {% for r in c.rooms  %}
-                <li>{{ r.code }}: {{ r.assigned_user.first_name }}  {{ r.assigned_user.last_name }}</li>
+                <tr {% if r.disabled %} style="background-color: lightgray;" {% endif %}>
+                    <td>{{ r.code }}</td>
+
+                    {% if r.assigned_user %}
+                        <td {% if r.assigned_user.is_freshie %} style="color:lightgreen" {% endif %} >
+                            {{ r.assigned_user.first_name }}  {{ r.assigned_user.last_name }}
+                        </td>
+                    {% else %}
+                        <td></td>
+                    {% endif %}
+                </tr>
             {% endfor %}
-        </ul>
+        </table>
+
+        <h3>Unallocated users</h3>
+        <a name="{{ c.name }}_users"></a>
+
+        <table>
+            <tr>
+                <th>User</th>
+                <th>Roommate</th>
+            </tr>
+            {% for u in c.unallocated  %}
+                {% if u.needs_room %}
+                    <tr>
+                        <td>{{ u.first_name }} {{ u.last_name }}</td>
+                        <td>
+                            {% for m in u.roommates.all %}
+                                <span {% if m.is_freshie %} style="color: lightgreen; " {% endif %}>
+                                    {{ m.first_name }} {{ m.last_name }}
+                                </span>
+                            {% endfor %}
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </table>
+
     {% endfor %}
+
+    <h2>Users without college</h2>
+    <a name="unallocated_users"></a>
+
+    <table>
+        <tr>
+            <th>User</th>
+            <th>Roommate</th>
+        </tr>
+        {% for u in unknowns  %}
+            {% if u.needs_room %}
+                <tr>
+                    <td>{{ u.first_name }} {{ u.last_name }} {{ u.college }}</td>
+                    <td>
+                        {% for m in u.roommates.all %}
+                            <span {% if m.is_freshie %} style="color: lightgreen; " {% endif %}>
+                                {{ m.first_name }} {{ m.last_name }}
+                            </span>
+                        {% endfor %}
+                    </td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+    </table>
+    {% comment %}
+    <!-- {% for u in usernames %}"{{ u.username }}", {% endfor %} -->
+    {% endcomment %}
 
 {%  endblock %}

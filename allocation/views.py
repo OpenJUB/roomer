@@ -1,5 +1,6 @@
 import datetime
 
+from django.db.models import Q
 from django.views.decorators.http import require_http_methods, require_GET
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -120,9 +121,12 @@ def room_results(request):
         'allocations': [
             {
                 'name': n,
-                'rooms': Room.objects.filter(college=p).exclude(assigned_user=None).order_by('code')
+                'rooms': Room.objects.filter(college=p).order_by('code'),
+                'unallocated': UserProfile.objects.filter(college=p,allocated_room=None)
             } for (p, n) in settings.COLLEGE_CHOICES
-        ]
+        ],
+        'unknowns': UserProfile.objects.filter(allocated_room=None, college=''),
+        'usernames': UserProfile.objects.all().values('username')
     }
 
     return render(request, 'allocation/results.html', context=context)

@@ -5,6 +5,7 @@ from django.db.models import Max
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator, ValidationError
 
+from data_import import utils
 from data_import.utils import get_housing_code
 from .regions import regions
 
@@ -135,6 +136,25 @@ class UserProfile(AbstractUser):
 
     points = models.DecimalField(default=0, decimal_places=1, max_digits=6, blank=True, editable=False)
     roommates = models.ManyToManyField("self", blank=True)
+
+    @property
+    def is_freshie(self):
+        types = [
+            utils.get_housing_code(settings.HOUSING_TYPE_FRESHIE),
+            utils.get_housing_code(settings.HOUSING_TYPE_UNKNOWN)
+        ]
+
+        return self.housing_type in types
+
+    @property
+    def needs_room(self):
+        types = [
+            utils.get_housing_code(settings.HOUSING_TYPE_UG_1),
+            utils.get_housing_code(settings.HOUSING_TYPE_UG_2),
+            utils.get_housing_code(settings.HOUSING_TYPE_FOUNDATION_YEAR),
+        ]
+
+        return self.housing_type in types
 
     def send_roommate_request(self, other):
         """ Creates a request, also checking if another request in the opposite direction
@@ -320,6 +340,10 @@ class Room(models.Model):
 
     def has_tag(self, tag):
         return RoomTag.objects.filter(room=self, tag=tag).exists()
+
+    @property
+    def disabled(self):
+        return self.has_tag(Room.DISABLED_ROOM_TAG)
 
     def update_generated_tags(self):
         self.tags.filter(generated=True).delete()

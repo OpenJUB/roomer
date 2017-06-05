@@ -1,5 +1,6 @@
 import sys
 
+from data_import import utils
 from roomer.models import Room, UserProfile
 
 __author__ = 'twiesing'
@@ -34,7 +35,7 @@ class Command(BaseCommand):
         for (p, n) in settings.COLLEGE_CHOICES:
             print("# Users without room in {}".format(n))
             for u in UserProfile.objects.filter(college=p, allocated_room=None):
-                if u.housing_type != settings.HOUSING_TYPE_FRESHIE:
+                if u.housing_type != utils.get_housing_code(settings.HOUSING_TYPE_FRESHIE):
                     row = [
                               u.get_full_name()
                           ] + list(
