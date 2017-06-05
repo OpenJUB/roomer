@@ -71,7 +71,7 @@ def create_user_dict(uname, data):
         'email': data['email'],
         'status': data['status'],
         'housing_type': get_housing_type(data),
-        'year': int(data['year']),
+        'year': int(data['year'] or '0'),
         'major': data['major'],
         'country': data['country'],
         'old_college': get_college_code(data['college']),
