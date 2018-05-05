@@ -1,5 +1,5 @@
 # Django itself
-Django==1.9.6
+Django==1.11.13
 
 # For OpenJUB auth backend
 requests==2.10.0
@@ -14,3 +14,7 @@ psycopg2==2.6.1
 # For development tools
 Werkzeug==0.11.9
 django-extensions==1.6.7
+
+# For unified login
+django-allauth==0.35.0
+django-allauth-dreamjub==0.1.3

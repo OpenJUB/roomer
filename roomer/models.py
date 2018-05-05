@@ -115,6 +115,8 @@ class UserProfile(AbstractUser):
     country = models.CharField(max_length=64, editable=False)
     status = models.CharField(max_length=100, editable=False)
 
+    REQUIRED_FIELDS = ['year', 'major', 'country', 'housing_type', 'status', 'email']
+
     # To allow foundation years to participate
     is_whitelisted = models.BooleanField(default=False)
     is_tall = models.BooleanField(default=False)

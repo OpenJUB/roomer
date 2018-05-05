@@ -31,7 +31,7 @@
                     <li><a href="{% url 'logout' %}">Log Out</a></li>
                 {% else %}
                     <li>
-                        <a href="{%  url 'login' %}">Log in</a>
+                        <a href="{%  url 'dreamjub_login' %}">Log in</a>
                     </li>
                 {%  endif %}
             </ul>
@@ -47,7 +47,7 @@
             <h1>Hey there!</h1>
             <ul class="flat-list">
                 <li>We hope you're having a great day!</li>
-                <li>(<a href="{% url 'login' %}">log in</a>) to get started.</li>
+                <li>(<a href="{% url 'dreamjub_login' %}">log in</a>) to get started.</li>
             </ul>
         {% endif %}
 

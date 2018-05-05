@@ -20,6 +20,9 @@ from django.contrib.auth import views as auth_views
 from .views import home, stats
 from .forms import RoomerAuthForm
 
+from dreamjub.providers.oauth import urls as oauth_urls
+from allauth import urls as auth_urls
+
 urlpatterns = [
     url(r'^$', home, name="home"),
     url(r'^stats/', stats, name="stats"),
@@ -40,4 +43,5 @@ urlpatterns = [
     # Authentication
     url(r'^login/', auth_views.login, {'authentication_form': RoomerAuthForm, 'template_name': 'auth/login.html'}, name="login"),
     url(r'^logout/', auth_views.logout, {'template_name': 'auth/logout.html', 'next_page': 'home'}, name="logout"),
+    url(r'^accounts/', include(auth_urls))
 ]

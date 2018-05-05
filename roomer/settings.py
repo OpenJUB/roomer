@@ -37,12 +37,18 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'django_extensions',
     'collegechooser',
     'roommates',
     'roomer',
     'allocation',
-    'faq'
+    'faq',
+
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'dreamjub.providers.oauth',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -133,9 +139,14 @@ AUTH_USER_MODEL = "roomer.UserProfile"
 
 # OpenJUB auth
 AUTHENTICATION_BACKENDS = ( 'django.contrib.auth.backends.ModelBackend',
-                            'roomer.ojub_auth.OjubBackend')
+                            'allauth.account.auth_backends.AuthenticationBackend')
+ACCOUNT_AUTHENTICATION_METHOD = 'username'
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_EMAIL_REQUIRED = False
+ACCOUNT_EMAIL_VERIFICATION = 'none'
 
-LOGIN_URL = "login"
+LOGIN_URL = "dreamjub.providers.oauth_login"
+LOGIN_REDIRECT_URL = "home"
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
