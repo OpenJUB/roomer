@@ -4,15 +4,9 @@ from django.utils import timezone
 
 class DreamjubAdapter(DefaultSocialAccountAdapter):
     def is_open_for_signup(self, request, sociallogin):
-        print("IS OPEN FOR SIGNUP")
-        print(sociallogin.account.extra_data)
-        return super().is_open_for_signup(request, sociallogin)
+        return super().is_open_for_signup(request, sociallogin) and sociallogin.account.extra_data.get('active', False)
 
     def populate_user(self, request, sociallogin, data):
-        # TODO Populate users from sociallogin.account.extra_data
-        print("POPULATE USER")
-        print(sociallogin.account.extra_data)
-        
         extra = sociallogin.account.extra_data
         user = sociallogin.user
 
