@@ -151,7 +151,7 @@ SOCIALACCOUNT_ADAPTER = 'roomer.adapter.DreamjubAdapter'
     
 
 
-LOGIN_URL = "dreamjub.providers.oauth_login"
+LOGIN_URL = "dreamjub_login"
 LOGIN_REDIRECT_URL = "home"
 
 # Internationalization
