@@ -141,9 +141,14 @@ AUTH_USER_MODEL = "roomer.UserProfile"
 AUTHENTICATION_BACKENDS = ( 'django.contrib.auth.backends.ModelBackend',
                             'allauth.account.auth_backends.AuthenticationBackend')
 ACCOUNT_AUTHENTICATION_METHOD = 'username'
-ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_EMAIL_REQUIRED = False
+ACCOUNT_USERNAME_REQUIRED = True
+ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = 'none'
+
+
+SOCIALACCOUNT_ADAPTER = 'roomer.adapter.DreamjubAdapter'
+    
+
 
 LOGIN_URL = "dreamjub.providers.oauth_login"
 LOGIN_REDIRECT_URL = "home"
