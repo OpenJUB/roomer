@@ -146,6 +146,7 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 
 
+ACCOUNT_ADAPTER = 'roomer.adapter.NoNormalSignup'
 SOCIALACCOUNT_ADAPTER = 'roomer.adapter.DreamjubAdapter'
     
 
