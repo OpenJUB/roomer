@@ -152,6 +152,7 @@ def get_next_phases(user=None):
         phases.append({
             'name': 'College Phase',
             'relative_time': convert_phase_time(phase),
+            'absolute_time': phase.end if phase.is_open() else phase.start,
             'phase': phase,
             'eligible': True,
         })
