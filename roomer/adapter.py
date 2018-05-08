@@ -34,8 +34,8 @@ class DreamjubAdapter(DefaultSocialAccountAdapter):
         if extra['status'] == 'foundation-year' or extra['status'] == 'medprep':
             user.housing_type = 2 # settings.HOUSING_TYPE_FOUNDATION_YEAR
         elif extra['status'] == 'master': #No more grads
-            user.housing_type = max(6, min(7, extra['year'] - year_now + 6)) # settings.HOUSING_TYPE_MS_(1|2)
+            user.housing_type = max(6, min(7, extra['year'] - year_now + 6 + 2)) # settings.HOUSING_TYPE_MS_(1|2)
         elif extra['status'] == 'undergrad':
-            user.housing_type = max(3, min(5, extra['year'] - year_now + 3)) # settings.HOUSING_TYPE_UG_(1|2|3)
+            user.housing_type = max(3, min(5, extra['year'] - year_now + 3 + 2)) # settings.HOUSING_TYPE_UG_(1|2|3)
 
         return super().populate_user(request, sociallogin, data)
