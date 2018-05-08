@@ -10,11 +10,21 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
-import os
+import os, csv
+
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+eligible_people = []
+
+#importing CSV file
+csv_file = os.path.join(BASE_DIR, "eligible_students.csv")
+with open(csv_file, 'r') as f:
+    render = csv.reader(f, delimiter=';')
+    for row in render:
+        eligible_people.append(row[1] + (' ' if row[2] else '') + row[2] + ' ' + row[0])
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
@@ -146,9 +156,8 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 
 
-ACCOUNT_ADAPTER = 'roomer.adapter.NoNormalSignup'
 SOCIALACCOUNT_ADAPTER = 'roomer.adapter.DreamjubAdapter'
-    
+
 
 
 LOGIN_URL = "dreamjub_login"
