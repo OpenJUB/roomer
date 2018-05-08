@@ -70,3 +70,6 @@ roomer/prod_settings.py
 # Exclude generated Room fixture
 roomer/fixtures/*.json
 data_import/*.json
+
+# Exclude csv data files
+eligible_students.csv
