@@ -21,6 +21,10 @@ def is_full(college_code):
 
     return fills.get(college_code, 0) >= ((capacity * settings.MAX_COLLEGE_FILL) / 100)
 
+#returns true if quota hasn't been filled yet
+def racial_profiling(country, college):
+    country_count = models.UserProfile.objects.filter(college=college).filter(country=country).count()
+    return (country_count/get_college_capacity(college)) < settings.MAX_RACE_QUOTA
 
 def can_allocate_to(college_code):
     return not is_full(college_code)
@@ -38,5 +42,3 @@ def get_fill_percentages():
     out = {code: (float(fills[code]*100) / capacity) for code, capacity in settings.COLLEGE_CAPACITIES if fills.get(code, -1) != -1}
 
     return out
-
-

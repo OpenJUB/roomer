@@ -155,7 +155,7 @@ ACCOUNT_USERNAME_REQUIRED = True
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 
-
+MAX_RACE_QUOTA = 0.2
 SOCIALACCOUNT_ADAPTER = 'roomer.adapter.DreamjubAdapter'
 
 
@@ -193,10 +193,10 @@ COLLEGE_CHOICES = [
 ]
 
 COLLEGE_CAPACITIES = [
-    ('NM', 164),
-    ('C3', 222),
-    ('KR', 170),
-    ('ME', 170)
+    ('NM', 257),
+    ('C3', 246),
+    ('KR', 188),
+    ('ME', 188)
 ]
 
 # types of students
