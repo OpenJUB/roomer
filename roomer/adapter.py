@@ -3,6 +3,8 @@ from allauth.account.adapter import DefaultAccountAdapter
 from roomer import settings
 from django.utils import timezone
 
+from .utils import get_college_code
+
 class NoNormalSignup(DefaultAccountAdapter):
     def is_open_for_signup(self, request):
         return False
@@ -18,7 +20,7 @@ class DreamjubAdapter(DefaultSocialAccountAdapter):
         user.year = extra['year']
         user.major = extra['majorShort']
         user.country = extra['country']
-        user.old_college = extra['college'] or ''
+        user.old_college = get_college_code(extra['college'] or '')
 
         user.housing_type = 0 # settings.HOUSING_TYPE_UNKNOWN
 
