@@ -5,12 +5,13 @@ from django.utils import timezone
 
 from .utils import get_college_code
 
-class NoNormalSignup(DefaultAccountAdapter):
-    def is_open_for_signup(self, request):
-        return False
-
 class DreamjubAdapter(DefaultSocialAccountAdapter):
     def is_open_for_signup(self, request, sociallogin):
+        #Fullname concatenated through jacobs API
+        #Compared to the eligible_students.csv students
+        fullname = sociallogin.account.extra_data.get('firstName') + ' ' + sociallogin.account.extra_data.get('lastName')
+        if fullname not in settings.eligible_people:
+            return False
         return super().is_open_for_signup(request, sociallogin) and sociallogin.account.extra_data.get('active', False)
 
     def populate_user(self, request, sociallogin, data):
@@ -30,9 +31,9 @@ class DreamjubAdapter(DefaultSocialAccountAdapter):
         # so it's fine.
         year_now = timezone.now().year - 2000
 
-        if extra['status'] == 'foundation-year':
+        if extra['status'] == 'foundation-year' or extra['status'] == 'medprep':
             user.housing_type = 2 # settings.HOUSING_TYPE_FOUNDATION_YEAR
-        elif extra['status'] == 'master':
+        elif extra['status'] == 'master': #No more grads
             user.housing_type = max(6, min(7, extra['year'] - year_now + 6)) # settings.HOUSING_TYPE_MS_(1|2)
         elif extra['status'] == 'undergrad':
             user.housing_type = max(3, min(5, extra['year'] - year_now + 3)) # settings.HOUSING_TYPE_UG_(1|2|3)

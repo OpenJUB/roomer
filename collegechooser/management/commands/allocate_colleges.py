@@ -15,7 +15,7 @@ class Command(BaseCommand):
         """ Allocates a user to a college of their choice """
 
         for c in user.college_pref.split(':'):
-            if utils.can_allocate_to(c):
+            if utils.can_allocate_to(c) and utils.racial_profiling(user.country, c):
                 user.college = c
                 user.save()
                 print("Allocated {} to {}".format(user.username, c))
