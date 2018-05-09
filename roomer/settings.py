@@ -22,7 +22,7 @@ eligible_people = []
 #importing CSV file
 csv_file = os.path.join(BASE_DIR, "eligible_students.csv")
 with open(csv_file, 'r') as f:
-    render = csv.reader(f, delimiter=';')
+    render = csv.reader(f, delimiter=',')
     for row in render:
         eligible_people.append(row[1] + (' ' if row[2] else '') + row[2] + ' ' + row[0])
 
