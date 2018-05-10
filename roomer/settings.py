@@ -21,11 +21,14 @@ eligible_people = []
 
 #importing CSV file
 csv_file = os.path.join(BASE_DIR, "eligible_students.csv")
-with open(csv_file, 'r', encoding='latin_1') as f:
-    render = csv.reader(f, delimiter=',')
+with open(csv_file, 'r', encoding='utf-8') as f:
+    render = csv.reader(f, delimiter=';')
     for row in render:
         if len(row) >= 3:
             eligible_people.append((row[1] + (' ' if row[2] else '') + row[2] + ' ' + row[0]).rstrip())
+
+for entry in eligible_people:
+    print("Eligible person: '{}'".format(entry))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/

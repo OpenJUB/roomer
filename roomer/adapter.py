@@ -11,8 +11,9 @@ class DreamjubAdapter(DefaultSocialAccountAdapter):
         #Compared to the eligible_students.csv students
         fullname = sociallogin.account.extra_data.get('firstName') + ' ' + sociallogin.account.extra_data.get('lastName')
         if fullname not in settings.eligible_people:
+            print("Fullname check failed: '{}'".format(fullname))
             return False
-        return super().is_open_for_signup(request, sociallogin) and sociallogin.account.extra_data.get('active', False)
+        return super().is_open_for_signup(request, sociallogin)
 
     def populate_user(self, request, sociallogin, data):
         extra = sociallogin.account.extra_data
