@@ -21,7 +21,7 @@ eligible_people = []
 
 #importing CSV file
 csv_file = os.path.join(BASE_DIR, "eligible_students.csv")
-with open(csv_file, 'r', encoding='latin_1') as f:
+with open(csv_file, 'r', encoding='utf-8') as f:
     render = csv.reader(f, delimiter=';')
     for row in render:
         if len(row) >= 3:
