@@ -2,7 +2,7 @@ from django.conf import settings
 from django.db.models import Count
 
 from roomer.models import UserProfile
-
+from roomer import models
 
 def get_college_capacity(college_code):
     for code, capacity in settings.COLLEGE_CAPACITIES:
