@@ -42,5 +42,6 @@ class Command(BaseCommand):
             pot = list(filter(lambda u:u.seniority_points != seniors, pot))
 
             # and iterate through them randomly
-            for stud in random.shuffle(studs):
+            random.shuffle(studs)
+            for stud in studs:
                 self.molest(stud)
