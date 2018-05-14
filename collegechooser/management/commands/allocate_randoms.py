@@ -1,5 +1,6 @@
 __author__ = 'twiesing'
 
+from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.core import management
 
@@ -7,23 +8,18 @@ import random
 from collegechooser import utils
 
 from roomer.models import UserProfile
+from .allocate_colleges import Command as NAC
 
-class Command(BaseCommand):
-    help = 'Allocate users to their choosen college'
-
-    def try_allocate(self, user, c):
-        if utils.can_allocate_to(c) and utils.racial_profiling(user.country, c):
-            user.college = c
-            user.save()
-            print("Allocated {} to {}".format(user.username, c))
-            return True
-        
-        return False
+class Command(NAC):
+    help = 'Allocate users without college preference into a random college. '
 
     def molest(self, user):
         """ Allocates a user to a college of their choice """
 
-        for c in user.college_pref.split(':'):
+        colleges = [c[0] for c in settings.COLLEGE_CHOICES]
+        random.shuffle(colleges)
+
+        for c in colleges:
             if self.try_allocate(self, user, c):
                 return True
 
@@ -32,8 +28,7 @@ class Command(BaseCommand):
         return False
 
     def handle(self, *args, **options):
-        pot = UserProfile.objects.filter(college='').exclude(
-            college_pref='')
+        pot = UserProfile.objects.filter(college='').filter(college_pref='')
 
         pot = list(sorted(pot, key=lambda u:u.seniority_points))
 
