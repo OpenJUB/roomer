@@ -25,7 +25,7 @@ with open(csv_file, 'r', encoding='utf-8') as f:
     render = csv.reader(f, delimiter=';')
     for row in render:
         if len(row) >= 3:
-            eligible_people.append(row[1] + (' ' if row[2] else '') + row[2] + ' ' + row[0])
+            eligible_people.append((row[1] + (' ' if row[2] else '') + row[2] + ' ' + row[0]).rstrip())
 
 for entry in eligible_people:
     print("Eligible person: '{}'".format(entry))
@@ -160,6 +160,7 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 
 MAX_RACE_QUOTA = 0.2
+MAX_ALLOC = 2/3
 SOCIALACCOUNT_ADAPTER = 'roomer.adapter.DreamjubAdapter'
 
 

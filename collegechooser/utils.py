@@ -2,7 +2,7 @@ from django.conf import settings
 from django.db.models import Count
 
 from roomer.models import UserProfile
-
+from roomer import models
 
 def get_college_capacity(college_code):
     for code, capacity in settings.COLLEGE_CAPACITIES:
@@ -24,7 +24,7 @@ def is_full(college_code):
 #returns true if quota hasn't been filled yet
 def racial_profiling(country, college):
     country_count = models.UserProfile.objects.filter(college=college).filter(country=country).count()
-    return (country_count/get_college_capacity(college)) < settings.MAX_RACE_QUOTA
+    return (country_count/(get_college_capacity(college)*settings.MAX_ALLOC)) < settings.MAX_RACE_QUOTA
 
 def can_allocate_to(college_code):
     return not is_full(college_code)
