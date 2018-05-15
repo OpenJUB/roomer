@@ -42,13 +42,13 @@ class Command(BaseCommand):
             if code in rooms and code in tallrooms:
                 if not tall:
                     print("Talling {}".format(code))
-                    #room.add_tag(Room.TALL_ROOM_TAG)
-                    #room.save()
+                    room.add_tag(Room.TALL_ROOM_TAG)
+                    room.save()
             else:
                 if tall:
                     print("Smalling {}".format(code))
-                    #room.remove_tag(Room.TALL_ROOM_TAG)
-                    #room.save()
+                    room.remove_tag(Room.TALL_ROOM_TAG)
+                    room.save()
 
 
         for r in rooms:
