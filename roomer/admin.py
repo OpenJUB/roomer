@@ -56,7 +56,7 @@ class UserProfileAdmin(admin.ModelAdmin):
                        'housing_type', 'status')
     model = UserProfile
 
-    list_filter = ('college', 'old_college', 'major', 'year')
+    list_filter = ('college', 'old_college', 'major', 'year', 'extra_points')
     actions = [make_tall, unmake_tall]
 
     inlines = [
