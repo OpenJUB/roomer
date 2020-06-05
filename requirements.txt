@@ -1,5 +1,5 @@
 # Django itself
-Django==1.9.6
+Django==1.11.29
 
 # For OpenJUB auth backend
 requests==2.10.0
