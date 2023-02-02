@@ -12,5 +12,5 @@ babel==2.3.4
 psycopg2==2.6.1
 
 # For development tools
-Werkzeug==0.11.9
+Werkzeug==0.15.5
 django-extensions==1.6.7
